@@ -70,3 +70,9 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+WebGL Builds
+Assets/PolygonIcons/
+Assets/PolygonFantasyCharacters/
+Assets/TextMesh Pro/
+Assets/Brackeys/2D Mega Pack/
+Assets/Fonts/BIZUDGothic-Regular SDF.asset
