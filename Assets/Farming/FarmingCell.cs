@@ -13,6 +13,20 @@ public class FarmingCell : MonoBehaviour
 
     public bool isSelected;
 
+    public bool isFilled;
+    public void SetIsFilled(bool on)
+    {
+        isFilled = on;
+        if (isFilled)
+        {
+            renderer.color = Color.cyan;
+        }
+        else
+        {
+            renderer.color = Color.white;
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -32,6 +46,12 @@ public class FarmingCell : MonoBehaviour
         type = newType;
         renderer.sprite = manager.Type2Sprite(type);
     }
+
+    public bool HasAboveConnection => type.ToString().Contains("Up");
+    public bool HasBelowConnection => type.ToString().Contains("Down");
+    public bool HasRightConnection => type.ToString().Contains("Right");
+    public bool HasLeftConnection => type.ToString().Contains("Left");
+
 }
 
 public enum CellType
