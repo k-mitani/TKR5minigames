@@ -11,7 +11,19 @@ public class FarmingCell : MonoBehaviour
 
     public GameObject selectedHighlight;
 
-    public bool isSelected;
+    public bool _isSelected;
+    public bool isSelected
+    {
+        get
+        {
+            return _isSelected;
+        }
+        set
+        {
+            _isSelected = value;
+            selectedHighlight.SetActive(_isSelected);
+        }
+    }
 
     public bool isFilled;
     public void SetIsFilled(bool on)
@@ -30,15 +42,9 @@ public class FarmingCell : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        selectedHighlight.SetActive(false);
+        selectedHighlight.SetActive(isSelected);
         renderer = GetComponent<SpriteRenderer>();
         ChangeType(type);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        selectedHighlight.SetActive(isSelected);
     }
 
     public void ChangeType(CellType newType)

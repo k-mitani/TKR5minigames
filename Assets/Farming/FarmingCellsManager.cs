@@ -112,7 +112,7 @@ public class FarmingCellsManager : MonoBehaviour
         {
             var x = Random.Range(0, columns);
             var y = Random.Range(0, rows);
-            var type = typesExceptEmpty[Random.Range(0, typesExceptEmpty.Length)];
+            var type = remainingWaterWayList[0];
             var targetCell = cells[y, x];
             // Ç∑Ç≈Ç…îzíuçœÇ›Ç»ÇÁÇ‚ÇËíºÇ∑ÅB
             if (targetCell.type != CellType.Empty) continue;

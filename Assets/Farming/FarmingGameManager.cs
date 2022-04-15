@@ -110,7 +110,7 @@ public class FarmingGameManager : MonoBehaviour
         {
             resultText = "Ž¸”s...";
         }
-        if (filledRatio < 0.5)
+        else if (filledRatio < 0.5)
         {
             resultText = "‚¢‚Ü‚¢‚¿";
         }
