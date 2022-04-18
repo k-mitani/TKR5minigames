@@ -11,10 +11,12 @@ public class MiningGameManager : MonoBehaviour
     public MiningBox down;
     public MiningBox left;
     public MiningBox right;
-    public float curtainAnimationDuration = 1;
+    public float openCurtainAnimationDuration = 1;
+    public float closeCurtainAnimationDuration = 1;
     public List<Texture2D> textures = new List<Texture2D>();
     private List<Sprite> sprites = new List<Sprite>();
     private bool HasGold(MiningBox b) => b.Sprite == sprites[0];
+    private List<Sprite> spritesForRandom = new List<Sprite>();
 
     public float remainingTime;
     public float remainingTimeMax = 30;
@@ -24,6 +26,13 @@ public class MiningGameManager : MonoBehaviour
     public bool isGameOver;
     public bool isCurtainClosing;
     public bool isCurtainOpening;
+    public bool isWaitingAnswer;
+    public float waitingAnswerTimeMax = 0.5f;
+    public float waitingAnswerTime;
+
+    public bool usePenaltyInterval;
+    public float openCurtainInterval = 1f;
+    public float openCurtainIntervalPenalty = 1f;
 
     public int score;
     private TextMeshProUGUI txtScore;
@@ -34,63 +43,60 @@ public class MiningGameManager : MonoBehaviour
         remainingTime = remainingTimeMax;
         txtTime = GameObject.Find("Time").GetComponent<TextMeshProUGUI>();
         txtScore = GameObject.Find("AcquiredCount").GetComponent<TextMeshProUGUI>();
-        resultUi = GameObject.Find("Canvas/ResultUI");
+        resultUi = GameObject.Find("ResultUI");
         resultUi.SetActive(false);
 
         sprites = textures.Select(t => Sprite.Create(
             t,
             new Rect(Vector2.zero, new Vector2(16, 16)),
             new Vector2(0.5f, 0.5f))).ToList();
+
+        // ゴールドがやや多め1/4～1/2に出現するようにする。
+        spritesForRandom = sprites.Concat(Enumerable.Repeat(sprites[0], sprites.Count - 4)).ToList();
+
+
         txtScore.text = score.ToString("00");
 
-        StartCoroutine(AAA());
+        StartCoroutine(OpenCurtain());
     }
 
     IEnumerator OpenCurtain()
     {
+        isWaitingAnswer = true;
         isCurtainOpening = true;
         // 新しい絵柄をセットする。
-        up.Sprite = sprites[Random.Range(0, sprites.Count)];
-        down.Sprite = sprites[Random.Range(0, sprites.Count)];
-        left.Sprite = sprites[Random.Range(0, sprites.Count)];
-        right.Sprite = sprites[Random.Range(0, sprites.Count)];
+        up.Sprite = spritesForRandom[Random.Range(0, spritesForRandom.Count)];
+        down.Sprite = spritesForRandom[Random.Range(0, spritesForRandom.Count)];
+        left.Sprite = spritesForRandom[Random.Range(0, spritesForRandom.Count)];
+        right.Sprite = spritesForRandom[Random.Range(0, spritesForRandom.Count)];
         // カーテンを開く。
         var l = new List<Coroutine>();
-        l.Add(StartCoroutine(up.HideCurtain(curtainAnimationDuration)));
-        l.Add(StartCoroutine(down.HideCurtain(curtainAnimationDuration)));
-        l.Add(StartCoroutine(left.HideCurtain(curtainAnimationDuration)));
-        l.Add(StartCoroutine(right.HideCurtain(curtainAnimationDuration)));
+        l.Add(StartCoroutine(up.HideCurtain(openCurtainAnimationDuration)));
+        l.Add(StartCoroutine(down.HideCurtain(openCurtainAnimationDuration)));
+        l.Add(StartCoroutine(left.HideCurtain(openCurtainAnimationDuration)));
+        l.Add(StartCoroutine(right.HideCurtain(openCurtainAnimationDuration)));
         foreach (var c in l) yield return c;
         isCurtainOpening = false;
+        waitingAnswerTime = waitingAnswerTimeMax;
     }
 
-    IEnumerator AAA()
+    IEnumerator CloseCurtain()
     {
-        while (true)
+        isCurtainClosing = true;
+        // カーテンを開く。
+        var l = new List<Coroutine>();
+        l.Add(StartCoroutine(up.ShowCurtain(closeCurtainAnimationDuration)));
+        l.Add(StartCoroutine(down.ShowCurtain(closeCurtainAnimationDuration)));
+        l.Add(StartCoroutine(left.ShowCurtain(closeCurtainAnimationDuration)));
+        l.Add(StartCoroutine(right.ShowCurtain(closeCurtainAnimationDuration)));
+        foreach (var c in l) yield return c;
+        yield return new WaitForSeconds(usePenaltyInterval ? openCurtainIntervalPenalty : openCurtainInterval);
+        usePenaltyInterval = false;
+        isCurtainClosing = false;
+
+        if (!isGameOver)
         {
-            // 新しい絵柄をセットする。
-            up.Sprite = sprites[Random.Range(0, sprites.Count)];
-            down.Sprite = sprites[Random.Range(0, sprites.Count)];
-            left.Sprite = sprites[Random.Range(0, sprites.Count)];
-            right.Sprite = sprites[Random.Range(0, sprites.Count)];
-            // カーテンを開く。
-            var l = new List<Coroutine>();
-            l.Add(StartCoroutine(up.HideCurtain(curtainAnimationDuration)));
-            l.Add(StartCoroutine(down.HideCurtain(curtainAnimationDuration)));
-            l.Add(StartCoroutine(left.HideCurtain(curtainAnimationDuration)));
-            l.Add(StartCoroutine(right.HideCurtain(curtainAnimationDuration)));
-            foreach (var c in l) yield return c;
-            l.Clear();
-            yield return new WaitForSeconds(1);
-
-            up.SetBackgroundOkNg(Random.value > 0.5f);
-
-            l.Add(StartCoroutine(up.ShowCurtain(curtainAnimationDuration)));
-            l.Add(StartCoroutine(down.ShowCurtain(curtainAnimationDuration)));
-            l.Add(StartCoroutine(left.ShowCurtain(curtainAnimationDuration)));
-            l.Add(StartCoroutine(right.ShowCurtain(curtainAnimationDuration)));
-            foreach (var c in l) yield return c;
-            yield return new WaitForSeconds(1);
+            StartCoroutine(OpenCurtain());
         }
     }
 
@@ -116,18 +122,47 @@ public class MiningGameManager : MonoBehaviour
             {
                 // do nothing;
             }
-            else if (pressDown || pressUp || pressLeft || pressRight)
+            // 回答受付中の場合
+            else if (isWaitingAnswer)
             {
-                var ok = false;
-                if (pressDown) ok = HasGold(down);
-                else if (pressUp) ok = HasGold(up);
-                else if (pressLeft) ok = HasGold(left);
-                else if (pressRight) ok = HasGold(right);
-                if (ok)
+                // 回答が入力された場合
+                if (pressDown || pressUp || pressLeft || pressRight)
                 {
-                    score++;
-                    txtScore.text = score.ToString("00");
+                    var target = default(MiningBox);
+                    var ok = false;
+                    if (pressDown) target = down;
+                    else if (pressUp) target = up;
+                    else if (pressLeft) target = left;
+                    else if (pressRight) target = right;
+                    
+                    if (HasGold(target))
+                    {
+                        score++;
+                        txtScore.text = score.ToString("00");
+                        target.SetBackgroundOkNg(true);
+                    }
+                    else
+                    {
+                        target.SetBackgroundOkNg(false);
+                        usePenaltyInterval = true;
+                    }
+                    isWaitingAnswer = false;
                 }
+                // カーテンが開ききっていて未回答なら回答残り時間を減らす。
+                else if (!isCurtainOpening)
+                {
+                    waitingAnswerTime -= Time.deltaTime;
+                    // 時間切れになったら次の問題に移る。
+                    if (waitingAnswerTime <= 0)
+                    {
+                        isWaitingAnswer = false;
+                    }
+                }
+            }
+            // カーテンが開ききっていて回答受付が終わっていればカーテンを閉じる。
+            if (!isWaitingAnswer && !isCurtainOpening && !isCurtainClosing)
+            {
+                StartCoroutine(CloseCurtain());
             }
 
             // 残り時間を減らす。
@@ -143,6 +178,30 @@ public class MiningGameManager : MonoBehaviour
 
     private void GameOver()
     {
+        isGameOver = true;
+
+        resultUi.SetActive(true);
+        var resultText = "???";
+        // 30秒で15以下なら
+        if (score < remainingTimeMax * 0.50)
+        {
+            resultText = "失敗...";
+        }
+        // 30秒で20以下なら
+        else if (score < remainingTimeMax * 0.67)
+        {
+            resultText = "まずまず";
+        }
+        // 30秒で25以下なら
+        else if (score < remainingTimeMax * 0.86)
+        {
+            resultText = "成功";
+        }
+        else
+        {
+            resultText = "大成功!";
+        }
+        resultUi.transform.Find("Result").GetComponent<TextMeshProUGUI>().text = resultText;
     }
 
     public void Restart()
