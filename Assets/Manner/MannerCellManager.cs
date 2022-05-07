@@ -55,7 +55,7 @@ public class MannerCellManager : MonoBehaviour
             c.Color = colors[index];
         }
 
-        // ‰Šú”z’u‚ðƒ‰ƒ“ƒ_ƒ€‚É‚·‚éB
+        // åˆæœŸé…ç½®ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«ã™ã‚‹ã€‚
         var remainingRollCount = initialRandomRollCount;
         while (remainingRollCount > 0)
         {
@@ -75,11 +75,11 @@ public class MannerCellManager : MonoBehaviour
     (Vector3 pos, Vector3 size) PosAndSizeOf(int x, int y)
     {
         var g = xyGap;
-        // xˆÊ’u
+        // xä½ç½®
         var pxlsub = (0.5f + g) * Mathf.Clamp(x, 0, 2.5f);
         var pxmain = (1.0f + g) * Mathf.Clamp(x - 2.5f, 0, 3f);
         var pxrsub = (0.5f + g) * Mathf.Clamp(x - 5.5f, 0, 2.5f);
-        // yˆÊ’u
+        // yä½ç½®
         var pylsub = (0.5f + g) * Mathf.Clamp(y, 0, 2.5f);
         var pymain = (1.0f + g) * Mathf.Clamp(y - 2.5f, 0, 3f);
         var pyrsub = (0.5f + g) * Mathf.Clamp(y - 5.5f, 0, 2.5f);
@@ -96,7 +96,7 @@ public class MannerCellManager : MonoBehaviour
     static bool IsLowerSubArea(int x, int y) => x < 6 && y >= 6 && !IsOuerArea(x, y);
     static bool IsLeftSubArea(int x, int y) => x < 3 && y < 6 && !IsOuerArea(x, y);
     static bool IsRightSubArea(int x, int y) => x >= 6  && y < 6 && !IsOuerArea(x, y);
-    // ”ÍˆÍŠO
+    // ç¯„å›²å¤–
     static bool IsOuerArea(int x, int y) =>
         (x < 3 && y < 3) ||
         (x >= 6 && y < 3) ||

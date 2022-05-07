@@ -51,7 +51,7 @@ public class MiningGameManager : MonoBehaviour
             new Rect(Vector2.zero, new Vector2(16, 16)),
             new Vector2(0.5f, 0.5f))).ToList();
 
-        // ƒS[ƒ‹ƒh‚ª‚â‚â‘½‚ß1/4`1/2‚ÉoŒ»‚·‚é‚æ‚¤‚É‚·‚éB
+        // ã‚´ãƒ¼ãƒ«ãƒ‰ãŒã‚„ã‚„å¤šã‚1/4ï½1/2ã«å‡ºç¾ã™ã‚‹ã‚ˆã†ã«ã™ã‚‹ã€‚
         spritesForRandom = sprites.Concat(Enumerable.Repeat(sprites[0], sprites.Count - 4)).ToList();
 
 
@@ -64,12 +64,12 @@ public class MiningGameManager : MonoBehaviour
     {
         isWaitingAnswer = true;
         isCurtainOpening = true;
-        // V‚µ‚¢ŠG•¿‚ğƒZƒbƒg‚·‚éB
+        // æ–°ã—ã„çµµæŸ„ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
         up.Sprite = spritesForRandom[Random.Range(0, spritesForRandom.Count)];
         down.Sprite = spritesForRandom[Random.Range(0, spritesForRandom.Count)];
         left.Sprite = spritesForRandom[Random.Range(0, spritesForRandom.Count)];
         right.Sprite = spritesForRandom[Random.Range(0, spritesForRandom.Count)];
-        // ƒJ[ƒeƒ“‚ğŠJ‚­B
+        // ã‚«ãƒ¼ãƒ†ãƒ³ã‚’é–‹ãã€‚
         var l = new List<Coroutine>();
         l.Add(StartCoroutine(up.HideCurtain(openCurtainAnimationDuration)));
         l.Add(StartCoroutine(down.HideCurtain(openCurtainAnimationDuration)));
@@ -83,7 +83,7 @@ public class MiningGameManager : MonoBehaviour
     IEnumerator CloseCurtain()
     {
         isCurtainClosing = true;
-        // ƒJ[ƒeƒ“‚ğŠJ‚­B
+        // ã‚«ãƒ¼ãƒ†ãƒ³ã‚’é–‹ãã€‚
         var l = new List<Coroutine>();
         l.Add(StartCoroutine(up.ShowCurtain(closeCurtainAnimationDuration)));
         l.Add(StartCoroutine(down.ShowCurtain(closeCurtainAnimationDuration)));
@@ -117,15 +117,15 @@ public class MiningGameManager : MonoBehaviour
         }
         else
         {
-            // ƒJ[ƒeƒ“‚ª•Â‚¶‚Ä‚¢‚é“r’†‚È‚ç‰½‚à‚µ‚È‚¢B
+            // ã‚«ãƒ¼ãƒ†ãƒ³ãŒé–‰ã˜ã¦ã„ã‚‹é€”ä¸­ãªã‚‰ä½•ã‚‚ã—ãªã„ã€‚
             if (isCurtainClosing)
             {
                 // do nothing;
             }
-            // ‰ñ“šó•t’†‚Ìê‡
+            // å›ç­”å—ä»˜ä¸­ã®å ´åˆ
             else if (isWaitingAnswer)
             {
-                // ‰ñ“š‚ª“ü—Í‚³‚ê‚½ê‡
+                // å›ç­”ãŒå…¥åŠ›ã•ã‚ŒãŸå ´åˆ
                 if (pressDown || pressUp || pressLeft || pressRight)
                 {
                     var target = default(MiningBox);
@@ -148,27 +148,27 @@ public class MiningGameManager : MonoBehaviour
                     }
                     isWaitingAnswer = false;
                 }
-                // ƒJ[ƒeƒ“‚ªŠJ‚«‚«‚Á‚Ä‚¢‚Ä–¢‰ñ“š‚È‚ç‰ñ“šc‚èŠÔ‚ğŒ¸‚ç‚·B
+                // ã‚«ãƒ¼ãƒ†ãƒ³ãŒé–‹ããã£ã¦ã„ã¦æœªå›ç­”ãªã‚‰å›ç­”æ®‹ã‚Šæ™‚é–“ã‚’æ¸›ã‚‰ã™ã€‚
                 else if (!isCurtainOpening)
                 {
                     waitingAnswerTime -= Time.deltaTime;
-                    // ŠÔØ‚ê‚É‚È‚Á‚½‚çŸ‚Ì–â‘è‚ÉˆÚ‚éB
+                    // æ™‚é–“åˆ‡ã‚Œã«ãªã£ãŸã‚‰æ¬¡ã®å•é¡Œã«ç§»ã‚‹ã€‚
                     if (waitingAnswerTime <= 0)
                     {
                         isWaitingAnswer = false;
                     }
                 }
             }
-            // ƒJ[ƒeƒ“‚ªŠJ‚«‚«‚Á‚Ä‚¢‚Ä‰ñ“šó•t‚ªI‚í‚Á‚Ä‚¢‚ê‚ÎƒJ[ƒeƒ“‚ğ•Â‚¶‚éB
+            // ã‚«ãƒ¼ãƒ†ãƒ³ãŒé–‹ããã£ã¦ã„ã¦å›ç­”å—ä»˜ãŒçµ‚ã‚ã£ã¦ã„ã‚Œã°ã‚«ãƒ¼ãƒ†ãƒ³ã‚’é–‰ã˜ã‚‹ã€‚
             if (!isWaitingAnswer && !isCurtainOpening && !isCurtainClosing)
             {
                 StartCoroutine(CloseCurtain());
             }
 
-            // c‚èŠÔ‚ğŒ¸‚ç‚·B
+            // æ®‹ã‚Šæ™‚é–“ã‚’æ¸›ã‚‰ã™ã€‚
             remainingTime -= Time.deltaTime;
             txtTime.text = Mathf.Max(Mathf.Ceil(remainingTime), 0).ToString("0");
-            // ŠÔØ‚ê‚É‚È‚Á‚½‚çƒQ[ƒ€I—¹
+            // æ™‚é–“åˆ‡ã‚Œã«ãªã£ãŸã‚‰ã‚²ãƒ¼ãƒ çµ‚äº†
             if (remainingTime <= 0)
             {
                 GameOver();
@@ -182,24 +182,24 @@ public class MiningGameManager : MonoBehaviour
 
         resultUi.SetActive(true);
         var resultText = "???";
-        // 30•b‚Å15ˆÈ‰º‚È‚ç
+        // 30ç§’ã§15ä»¥ä¸‹ãªã‚‰
         if (score < remainingTimeMax * 0.50)
         {
-            resultText = "¸”s...";
+            resultText = "å¤±æ•—...";
         }
-        // 30•b‚Å20ˆÈ‰º‚È‚ç
+        // 30ç§’ã§20ä»¥ä¸‹ãªã‚‰
         else if (score < remainingTimeMax * 0.67)
         {
-            resultText = "‚Ü‚¸‚Ü‚¸";
+            resultText = "ã¾ãšã¾ãš";
         }
-        // 30•b‚Å25ˆÈ‰º‚È‚ç
+        // 30ç§’ã§25ä»¥ä¸‹ãªã‚‰
         else if (score < remainingTimeMax * 0.86)
         {
-            resultText = "¬Œ÷";
+            resultText = "æˆåŠŸ";
         }
         else
         {
-            resultText = "‘å¬Œ÷!";
+            resultText = "å¤§æˆåŠŸ!";
         }
         resultUi.transform.Find("Result").GetComponent<TextMeshProUGUI>().text = resultText;
     }

@@ -42,7 +42,7 @@ public class FarmingCellsManager : MonoBehaviour
             .Zip(textures, (type, tex) => (type, tex))
             .ToDictionary(x => x.type, x => x.tex);
 
-        // ƒZƒ‹‚ğ”z’u‚·‚éB
+        // ã‚»ãƒ«ã‚’é…ç½®ã™ã‚‹ã€‚
         cells = new FarmingCell[rows, columns];
         for (int y = 0; y < rows; y++)
         {
@@ -55,8 +55,8 @@ public class FarmingCellsManager : MonoBehaviour
                 cell.transform.localPosition = pos;
                 cell.type = CellType.Empty;
                 cell.manager = this;
-                // cell.renderer‚ªnull‚ÅƒGƒ‰[‚É‚È‚Á‚½‚è‚µ‚Ä‚¾‚é‚¢‚Ì‚Å
-                // ‚±‚±‚ÅStart‚ğŒÄ‚Ño‚µ‚Ä‚İ‚éB
+                // cell.rendererãŒnullã§ã‚¨ãƒ©ãƒ¼ã«ãªã£ãŸã‚Šã—ã¦ã ã‚‹ã„ã®ã§
+                // ã“ã“ã§Startã‚’å‘¼ã³å‡ºã—ã¦ã¿ã‚‹ã€‚
                 cell.SendMessage("Start");
             }
         }
@@ -64,7 +64,7 @@ public class FarmingCellsManager : MonoBehaviour
         selectedPositionY = 0;
         cells[selectedPositionY, selectedPositionX].isSelected = true;
 
-        // ‹N“_ƒZƒ‹‚ÉÚ‘±‚·‚é˜gŠO‚ÌƒZƒ‹‚ğ”z’u‚·‚éB
+        // èµ·ç‚¹ã‚»ãƒ«ã«æ¥ç¶šã™ã‚‹æ å¤–ã®ã‚»ãƒ«ã‚’é…ç½®ã™ã‚‹ã€‚
         var startCell = cells[fillStartY, fillStartX];
         fillStartOuterCell = Instantiate(cellPrefab, transform);
         fillStartOuterCell.transform.localPosition =
@@ -74,7 +74,7 @@ public class FarmingCellsManager : MonoBehaviour
 
 
 
-        // 64ŒÂ•ª‚Ì…˜H‚ğƒ‰ƒ“ƒ_ƒ€‚ÉƒVƒƒƒbƒtƒ‹‚µ‚½ƒŠƒXƒg‚ğì‚éB
+        // 64å€‹åˆ†ã®æ°´è·¯ã‚’ãƒ©ãƒ³ãƒ€ãƒ ã«ã‚·ãƒ£ãƒƒãƒ•ãƒ«ã—ãŸãƒªã‚¹ãƒˆã‚’ä½œã‚‹ã€‚
         var typesExceptEmpty = types.Except(new[] { CellType.Empty }).ToArray();
         var totalCells = columns * rows;
         while (true)
@@ -93,7 +93,7 @@ public class FarmingCellsManager : MonoBehaviour
             .OrderBy(type => Random.value)
             .ToList();
 
-        // Ÿ‚Ì…˜H‚Ì•\¦—p‚ÌƒIƒuƒWƒFƒNƒg‚ğæ“¾‚·‚éB
+        // æ¬¡ã®æ°´è·¯ã®è¡¨ç¤ºç”¨ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’å–å¾—ã™ã‚‹ã€‚
         nextWaterPathViews[0] = GameObject.Find("NextWaterPath1").GetComponent<FarmingCell>();
         nextWaterPathViews[1] = GameObject.Find("NextWaterPath2").GetComponent<FarmingCell>();
         nextWaterPathViews[2] = GameObject.Find("NextWaterPath3").GetComponent<FarmingCell>();
@@ -106,7 +106,7 @@ public class FarmingCellsManager : MonoBehaviour
         var typesExceptEmpty = ((CellType[])System.Enum.GetValues(typeof(CellType)))
             .Except(new[] { CellType.Empty })
             .ToArray();
-        // ƒ‰ƒ“ƒ_ƒ€‚É‰Šú”z’u‚·‚éB
+        // ãƒ©ãƒ³ãƒ€ãƒ ã«åˆæœŸé…ç½®ã™ã‚‹ã€‚
         var putCount = 0;
         while (putCount < initialRandomPutWaterWayCount)
         {
@@ -114,18 +114,18 @@ public class FarmingCellsManager : MonoBehaviour
             var y = Random.Range(0, rows);
             var type = remainingWaterWayList[0];
             var targetCell = cells[y, x];
-            // ‚·‚Å‚É”z’uÏ‚İ‚È‚ç‚â‚è’¼‚·B
+            // ã™ã§ã«é…ç½®æ¸ˆã¿ãªã‚‰ã‚„ã‚Šç›´ã™ã€‚
             if (targetCell.type != CellType.Empty) continue;
-            // êŠ‚ªl‹÷‚ÅA…˜H‚ªÚ‘±•s‰Â”\‚Èí—Ş‚È‚ç‚â‚è’¼‚·B
+            // å ´æ‰€ãŒå››éš…ã§ã€æ°´è·¯ãŒæ¥ç¶šä¸å¯èƒ½ãªç¨®é¡ãªã‚‰ã‚„ã‚Šç›´ã™ã€‚
             if (x == 0 && y == 0 && type == CellType.UpLeft) continue;
             if (x == columns - 1 && y == 0 && type == CellType.UpRight) continue;
             if (x == 0 && y == rows - 1 && type == CellType.DownLeft) continue;
             if (x == columns - 1 && y == rows - 1 && type == CellType.DownRight) continue;
-            // …˜H‚Ì‹N“_‚Å¶‚ÆŒq‚ª‚Á‚Ä‚¢‚È‚¯‚ê‚Î‚â‚è’¼‚·B
+            // æ°´è·¯ã®èµ·ç‚¹ã§å·¦ã¨ç¹‹ãŒã£ã¦ã„ãªã‘ã‚Œã°ã‚„ã‚Šç›´ã™ã€‚
             if (x == fillStartX && y == fillStartY && !type.ToString().Contains("Left")) continue;
             
-            // TODO ‚·‚Å‚É”z’uÏ‚İ‚Ì…˜H‚Æ‚ÌÚ‘±Šm”F‚à•K—vi–Ê“|‚­‚³‚¢j
-            // ‚ ‚éƒZƒ‹‚ª‹l‚ñ‚Å‚¢‚È‚¢‚©Šm”F‚·‚éˆ—‚ª‚ ‚é‚Æ—Ç‚³‚»‚¤B
+            // TODO ã™ã§ã«é…ç½®æ¸ˆã¿ã®æ°´è·¯ã¨ã®æ¥ç¶šç¢ºèªã‚‚å¿…è¦ï¼ˆé¢å€’ãã•ã„ï¼‰
+            // ã‚ã‚‹ã‚»ãƒ«ãŒè©°ã‚“ã§ã„ãªã„ã‹ç¢ºèªã™ã‚‹å‡¦ç†ãŒã‚ã‚‹ã¨è‰¯ã•ãã†ã€‚
 
             PutWaterWay(x, y);
             putCount++;
@@ -180,9 +180,9 @@ public class FarmingCellsManager : MonoBehaviour
         fillStartOuterCell.SetIsFilled(true);
         yield return new WaitForSeconds(FillInterval);
 
-        // ‹N“_‚©‚ç‡”Ô‚ÉŒq‚ª‚Á‚Ä‚¢‚é…˜H‚ğÂ‚­‚µ‚Ä‚¢‚­B
+        // èµ·ç‚¹ã‹ã‚‰é †ç•ªã«ç¹‹ãŒã£ã¦ã„ã‚‹æ°´è·¯ã‚’é’ãã—ã¦ã„ãã€‚
         var frontiers = new List<(int y, int x)>();
-        // ‹N“_‚ªŒq‚ª‚Á‚Ä‚¢‚é‚©Šm”F‚·‚éB
+        // èµ·ç‚¹ãŒç¹‹ãŒã£ã¦ã„ã‚‹ã‹ç¢ºèªã™ã‚‹ã€‚
         if (cells[fillStartY, fillStartX].HasLeftConnection)
         {
             frontiers.Add((fillStartY, fillStartX));
@@ -194,9 +194,9 @@ public class FarmingCellsManager : MonoBehaviour
             var newFrontiers = new HashSet<(int y, int x)>();
             foreach (var (y, x) in frontiers)
             {
-                // ’–ÚÀ•W‚ÌƒZƒ‹‚Æã‰º¶‰E‚ÌƒZƒ‹‚ª‚Â‚È‚ª‚Á‚Ä‚¢‚é‚©Šm”F‚·‚éB
-                // Œq‚ª‚Á‚Ä‚¢‚ÄA‚È‚¨‚©‚Â‚Ü‚¾Â‚­“h‚ç‚ê‚Ä‚¢‚È‚¯‚ê‚ÎA
-                // Â‚­“h‚Á‚ÄŸ‚Ì’TõƒŠƒXƒg‚É’Ç‰Á‚·‚éB
+                // æ³¨ç›®åº§æ¨™ã®ã‚»ãƒ«ã¨ä¸Šä¸‹å·¦å³ã®ã‚»ãƒ«ãŒã¤ãªãŒã£ã¦ã„ã‚‹ã‹ç¢ºèªã™ã‚‹ã€‚
+                // ç¹‹ãŒã£ã¦ã„ã¦ã€ãªãŠã‹ã¤ã¾ã é’ãå¡—ã‚‰ã‚Œã¦ã„ãªã‘ã‚Œã°ã€
+                // é’ãå¡—ã£ã¦æ¬¡ã®æ¢ç´¢ãƒªã‚¹ãƒˆã«è¿½åŠ ã™ã‚‹ã€‚
                 var target = cells[y, x];
                 var above = y - 1 >= 0 ? cells[y - 1, x] : null;
                 if (above != null && !above.isFilled && above.HasBelowConnection && target.HasAboveConnection)

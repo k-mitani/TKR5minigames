@@ -30,7 +30,7 @@ public class NinjutsuGameManager : MonoBehaviour
 
     void ArrangeWave()
     {
-        txtRemaining.text = string.Format("{0:00}/{1:00}ñ‚", quizCount + 1, quizCountMax);
+        txtRemaining.text = string.Format("{0:00}/{1:00}Âïè", quizCount + 1, quizCountMax);
 
         cells.Refresh();
         target.sprite = cells.cells[Random.Range(0, cells.columns), Random.Range(0, cells.rows)].CharacterSprite;
@@ -45,7 +45,7 @@ public class NinjutsuGameManager : MonoBehaviour
         while (current < quizDuration)
         {
             yield return null;
-            // éüÇÃÉNÉCÉYÇ…à⁄Ç¡ÇƒÇ¢ÇΩÇÁíÜífÇ∑ÇÈÅB
+            // Ê¨°„ÅÆ„ÇØ„Ç§„Ç∫„Å´Áßª„Å£„Å¶„ÅÑ„Åü„Çâ‰∏≠Êñ≠„Åô„Çã„ÄÇ
             if (currentQuizCount != quizCount) yield break;
 
             current += Time.deltaTime;

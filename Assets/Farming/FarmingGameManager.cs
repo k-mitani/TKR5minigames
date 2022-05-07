@@ -26,13 +26,13 @@ public class FarmingGameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // “ü—Í‚ğŠm”F‚·‚éB
+        // å…¥åŠ›ã‚’ç¢ºèªã™ã‚‹ã€‚
         var pressDown = Input.GetKeyDown(KeyCode.DownArrow);
         var pressUp = Input.GetKeyDown(KeyCode.UpArrow);
         var pressLeft = Input.GetKeyDown(KeyCode.LeftArrow);
         var pressRight = Input.GetKeyDown(KeyCode.RightArrow);
         var pressSpace = Input.GetKeyDown(KeyCode.Space);
-        // ƒQ[ƒ€ƒI[ƒo[
+        // ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼æ™‚
         if (isGameOver)
         {
             if (pressSpace)
@@ -40,7 +40,7 @@ public class FarmingGameManager : MonoBehaviour
                 Restart();
             }
         }
-        // ƒQ[ƒ€I—¹‘O‚Ì…˜H‚É…‚ğ—¬‚·ƒAƒjƒ[ƒVƒ‡ƒ“’†‚È‚ç‰½‚à‚µ‚È‚¢B
+        // ã‚²ãƒ¼ãƒ çµ‚äº†å‰ã®æ°´è·¯ã«æ°´ã‚’æµã™ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ä¸­ãªã‚‰ä½•ã‚‚ã—ãªã„ã€‚
         else if (isPreGameOver)
         {
             // do nothing
@@ -54,12 +54,12 @@ public class FarmingGameManager : MonoBehaviour
             else if (pressRight) cells.SelectRight();
             else if (pressSpace)
             {
-                // …˜H‚ğ’u‚­B
+                // æ°´è·¯ã‚’ç½®ãã€‚
                 cells.PutWaterWay();
-                // Ÿ‚Ì…˜H‚Ì•\¦‚ğXV‚·‚éB
+                // æ¬¡ã®æ°´è·¯ã®è¡¨ç¤ºã‚’æ›´æ–°ã™ã‚‹ã€‚
                 cells.RefreshNextWaterPathView();
 
-                // ‘S•””z’u‚µI‚í‚Á‚½‚çƒQ[ƒ€I—¹
+                // å…¨éƒ¨é…ç½®ã—çµ‚ã‚ã£ãŸã‚‰ã‚²ãƒ¼ãƒ çµ‚äº†
                 if (cells.remainingWaterWayList.Count == 0)
                 {
                     shouldCallGameOver = true;
@@ -67,17 +67,17 @@ public class FarmingGameManager : MonoBehaviour
             }
             else
             {
-                // c‚èŠÔ‚ğŒ¸‚ç‚·B
+                // æ®‹ã‚Šæ™‚é–“ã‚’æ¸›ã‚‰ã™ã€‚
                 remainingTime -= Time.deltaTime;
                 txtTime.text = Mathf.Max(Mathf.Ceil(remainingTime), 0).ToString("0");
-                // ŠÔØ‚ê‚É‚È‚Á‚½‚çƒQ[ƒ€I—¹
+                // æ™‚é–“åˆ‡ã‚Œã«ãªã£ãŸã‚‰ã‚²ãƒ¼ãƒ çµ‚äº†
                 if (remainingTime <= 0)
                 {
                     shouldCallGameOver = true;
                 }
             }
 
-            // ƒQ[ƒ€I—¹ğŒ‚ğ–‚½‚µ‚Ä‚¢‚é‚È‚çAƒQ[ƒ€I—¹ˆ—‚ğs‚¤B
+            // ã‚²ãƒ¼ãƒ çµ‚äº†æ¡ä»¶ã‚’æº€ãŸã—ã¦ã„ã‚‹ãªã‚‰ã€ã‚²ãƒ¼ãƒ çµ‚äº†å‡¦ç†ã‚’è¡Œã†ã€‚
             if (shouldCallGameOver)
             {
                 GameOver();
@@ -92,39 +92,39 @@ public class FarmingGameManager : MonoBehaviour
 
     private IEnumerator GameOverCore()
     {
-        // …‚ğ—¬‚·ƒAƒjƒ[ƒVƒ‡ƒ“‚ğs‚¤B
+        // æ°´ã‚’æµã™ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’è¡Œã†ã€‚
         isPreGameOver = true;
         yield return cells.FillWater();
         isGameOver = true;
         isPreGameOver = false;
 
-        // Œq‚ª‚Á‚½ƒZƒ‹‚ÌŠ„‡‚ğŒvZ‚·‚éB
+        // ç¹‹ãŒã£ãŸã‚»ãƒ«ã®å‰²åˆã‚’è¨ˆç®—ã™ã‚‹ã€‚
         var cellsAll = cells.cells.Cast<FarmingCell>().ToArray();
         var cellsFilled = cellsAll.Where(c => c.isFilled).ToArray();
         var filledRatio = 1.0 * cellsFilled.Length / cellsAll.Length;
 
-        // Œ‹‰Ê‚ğ•\¦‚·‚éB
+        // çµæœã‚’è¡¨ç¤ºã™ã‚‹ã€‚
         resultUi.SetActive(true);
         var resultText = "?";
         if (filledRatio < 0.25)
         {
-            resultText = "¸”s...";
+            resultText = "å¤±æ•—...";
         }
         else if (filledRatio < 0.5)
         {
-            resultText = "‚¢‚Ü‚¢‚¿";
+            resultText = "ã„ã¾ã„ã¡";
         }
         else if (filledRatio < 0.75)
         {
-            resultText = "‚Ü‚¸‚Ü‚¸";
+            resultText = "ã¾ãšã¾ãš";
         }
         else if (filledRatio < 1)
         {
-            resultText = "—DG";
+            resultText = "å„ªç§€";
         }
         else
         {
-            resultText = "Š®àø!";
+            resultText = "å®Œç’§!";
         }
         resultUi.transform.Find("Result").GetComponent<TextMeshProUGUI>().text = resultText;
     }

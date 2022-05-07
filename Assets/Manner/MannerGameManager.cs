@@ -29,7 +29,7 @@ public class MannerGameManager : MonoBehaviour
     void Update()
     {
         var pressSpace = Input.GetKeyDown(KeyCode.Space);
-        // ƒQ[ƒ€ƒI[ƒo[
+        // ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼æ™‚
         if (isGameOver)
         {
             if (pressSpace)
@@ -54,9 +54,9 @@ public class MannerGameManager : MonoBehaviour
         RefreshHpText();
 
         var shouldGameOver = false;
-        // ”Õ–Ê‚ª‘S‚Ä“¯‚¶F‚É‚È‚Á‚½‚çƒQ[ƒ€I—¹
+        // ç›¤é¢ãŒå…¨ã¦åŒã˜è‰²ã«ãªã£ãŸã‚‰ã‚²ãƒ¼ãƒ çµ‚äº†
         if (cells.IsCompleted) shouldGameOver = true;
-        // hp‚ª0‚É‚È‚Á‚½‚çƒQ[ƒ€I—¹
+        // hpãŒ0ã«ãªã£ãŸã‚‰ã‚²ãƒ¼ãƒ çµ‚äº†
         if (hp <= 0) shouldGameOver = true;
 
         if (shouldGameOver)
@@ -72,10 +72,10 @@ public class MannerGameManager : MonoBehaviour
 
         var resultText = "???";
         var rate = cells.CompleteRate;
-        if (rate < 0.5) resultText = "¸”s...";
-        else if (rate < 0.75) resultText = "‚Ü‚¸‚Ü‚¸";
-        else if (rate < 1) resultText = "¬Œ÷";
-        else resultText = "‘å¬Œ÷!";
+        if (rate < 0.5) resultText = "å¤±æ•—...";
+        else if (rate < 0.75) resultText = "ã¾ãšã¾ãš";
+        else if (rate < 1) resultText = "æˆåŠŸ";
+        else resultText = "å¤§æˆåŠŸ!";
 
 
         var result = resultUi.transform.Find("Result").GetComponent<TextMeshProUGUI>();

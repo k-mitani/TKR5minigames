@@ -51,7 +51,7 @@ public class SpeechGameManager : MonoBehaviour
         txtTime = GameObject.Find("TimeText").GetComponent<TextMeshProUGUI>();
         timeBar = GameObject.Find("Timer").GetComponent<SpeechTimeBar>();
 
-        // ‰æ–Ê‚Ì”šƒpƒlƒ‹‚ğ‰Šú‰»‚·‚éB
+        // ç”»é¢ã®æ•°å­—ãƒ‘ãƒãƒ«ã‚’åˆæœŸåŒ–ã™ã‚‹ã€‚
         listPlayerNumber = new SpeechNumber[numberCount];
         listOpponentNumber = new SpeechNumber[numberCount];
         for (int i = 0; i < numberCount; i++)
@@ -76,26 +76,26 @@ public class SpeechGameManager : MonoBehaviour
         var sumOpponent = 0;
         for (int i = 0; i < numberCount; i++)
         {
-            // ©•ª‚Ì”š‚ğ•À‚×‚éB
+            // è‡ªåˆ†ã®æ•°å­—ã‚’ä¸¦ã¹ã‚‹ã€‚
             var pnum = listPlayerNumber[i];
             var pnumNext = Random.Range(0, 10);
             sumPlayer += pnumNext;
             StartCoroutine(RollNumber(pnum, (i + 1) * 0.1f, .5f, pnumNext));
 
-            // ‘Šè‚Ì”š‚ğ•À‚×‚éB
+            // ç›¸æ‰‹ã®æ•°å­—ã‚’ä¸¦ã¹ã‚‹ã€‚
             var onum = listOpponentNumber[i];
             var onumNext = Random.Range(0, 10);
             sumOpponent += onumNext;
             StartCoroutine(RollNumber(onum, (i + 1) * 0.1f, .5f, onumNext));
         }
 
-        // ³‰ğ‚ğƒZƒbƒg‚·‚éB
+        // æ­£è§£ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
         currentAnswer =
             sumPlayer == sumOpponent ? AnswerType.Same :
             sumPlayer > sumOpponent ? AnswerType.PlayerIsGrater :
             AnswerType.OpponentIsGrater;
 
-        // ƒ^ƒCƒ}[‚ğƒŠƒZƒbƒg‚·‚éB
+        // ã‚¿ã‚¤ãƒãƒ¼ã‚’ãƒªã‚»ãƒƒãƒˆã™ã‚‹ã€‚
         remainingTime = remainingTimeMax;
         txtTime.text = remainingTime.ToString("0");
         timeBar.DrawBar(Mathf.Max(0, remainingTime), remainingTimeMax);
@@ -108,7 +108,7 @@ public class SpeechGameManager : MonoBehaviour
         var time = 0f;
         yield return new WaitForSeconds(delay);
         yield return null;
-        // ”¼•ª‰ñ“]‚·‚éB
+        // åŠåˆ†å›è»¢ã™ã‚‹ã€‚
         while (time < duration / 2)
         {
             var currentAngleDiff = Mathf.Lerp(0, 360, time / duration);
@@ -116,9 +116,9 @@ public class SpeechGameManager : MonoBehaviour
             time += Time.deltaTime;
             yield return null;
         }
-        // ”š‚ğXV‚·‚éB
+        // æ•°å­—ã‚’æ›´æ–°ã™ã‚‹ã€‚
         num.UpdateNumber(nextNumber);
-        // ‚à‚¤”¼•ª‰ñ“]‚·‚éB
+        // ã‚‚ã†åŠåˆ†å›è»¢ã™ã‚‹ã€‚
         while (time < duration)
         {
             var currentAngleDiff = Mathf.Lerp(0, 360, time / duration);
@@ -133,11 +133,11 @@ public class SpeechGameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // “ü—Í‚ğŠm”F‚·‚éB
+        // å…¥åŠ›ã‚’ç¢ºèªã™ã‚‹ã€‚
         var pressDown = Input.GetKeyDown(KeyCode.DownArrow);
         var pressUp = Input.GetKeyDown(KeyCode.UpArrow);
         var pressSpace = Input.GetKeyDown(KeyCode.Space);
-        // ƒQ[ƒ€ƒI[ƒo[
+        // ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼æ™‚
         if (isGameOver)
         {
             if (pressSpace)
@@ -145,24 +145,24 @@ public class SpeechGameManager : MonoBehaviour
                 Restart();
             }
         }
-        // ”š‚ª‰ñ“]’†‚È‚ç“ü—Í‚ğó‚¯•t‚¯‚È‚¢B
+        // æ•°å­—ãŒå›è»¢ä¸­ãªã‚‰å…¥åŠ›ã‚’å—ã‘ä»˜ã‘ãªã„ã€‚
         else if (rollingNumberCount > 0)
         {
             // do nothing.
         }
-        // ³‰ğ•s³‰ğ‚ğ•\¦’†
+        // æ­£è§£ä¸æ­£è§£ã‚’è¡¨ç¤ºä¸­
         else if (isDisplayingTrueFalse)
         {
             if (pressDown || pressUp || pressSpace)
             {
                 isDisplayingTrueFalse = false;
                 txtTrueFalse.gameObject.SetActive(false);
-                // ‚Ç‚¿‚ç‚©‚ÌHP‚ª0‚É‚È‚ê‚ÎƒQ[ƒ€ƒI[ƒo[‚É‚·‚éB
+                // ã©ã¡ã‚‰ã‹ã®HPãŒ0ã«ãªã‚Œã°ã‚²ãƒ¼ãƒ ã‚ªãƒ¼ãƒãƒ¼ã«ã™ã‚‹ã€‚
                 if (playerHp.hp <= 0 || opponentHp.hp <= 0)
                 {
                     GameOver();
                 }
-                // Ÿ‚ÌƒEƒF[ƒu‚ğŠJn‚·‚éB
+                // æ¬¡ã®ã‚¦ã‚§ãƒ¼ãƒ–ã‚’é–‹å§‹ã™ã‚‹ã€‚
                 else
                 {
                     ArrangeGameWave();
@@ -177,38 +177,38 @@ public class SpeechGameManager : MonoBehaviour
                 if (pressUp) inputAnswer = AnswerType.OpponentIsGrater;
                 if (pressDown) inputAnswer = AnswerType.PlayerIsGrater;
                 var correct = inputAnswer == currentAnswer;
-                // ³‰ğ‚Ìê‡A‘Šè‚ÌHP‚ğŒ¸‚ç‚·B
+                // æ­£è§£ã®å ´åˆã€ç›¸æ‰‹ã®HPã‚’æ¸›ã‚‰ã™ã€‚
                 if (correct)
                 {
                     opponentHp.hp -= 1;
                 }
-                // ŠÔˆá‚¢‚Ìê‡A©•ª‚ÌHP‚ğŒ¸‚ç‚·B
+                // é–“é•ã„ã®å ´åˆã€è‡ªåˆ†ã®HPã‚’æ¸›ã‚‰ã™ã€‚
                 else
                 {
                     playerHp.hp -= 1;
                 }
 
-                // ³‰ğ•s³‰ğ‚ğ•\¦‚·‚éB
+                // æ­£è§£ä¸æ­£è§£ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
                 isDisplayingTrueFalse = true;
                 txtTrueFalse.gameObject.SetActive(true);
-                txtTrueFalse.text = correct ? "³‰ğ" : "•s³‰ğ";
+                txtTrueFalse.text = correct ? "æ­£è§£" : "ä¸æ­£è§£";
             }
-            // c‚èŠÔ‚ğXV‚·‚éB
+            // æ®‹ã‚Šæ™‚é–“ã‚’æ›´æ–°ã™ã‚‹ã€‚
             else
             {
                 remainingTime -= Time.deltaTime;
                 txtTime.text = Mathf.Max(Mathf.Ceil(remainingTime), 0).ToString("0");
                 timeBar.DrawBar(Mathf.Max(0, remainingTime), remainingTimeMax);
 
-                // ŠÔØ‚ê‚É‚È‚Á‚½‚ç•s³‰ğ‚É‚·‚éB
+                // æ™‚é–“åˆ‡ã‚Œã«ãªã£ãŸã‚‰ä¸æ­£è§£ã«ã™ã‚‹ã€‚
                 if (remainingTime <= 0)
                 {
-                    // ©•ª‚ÌHP‚ğ‚Ö‚ç‚·B
+                    // è‡ªåˆ†ã®HPã‚’ã¸ã‚‰ã™ã€‚
                     playerHp.hp -= 1;
-                    // ³‰ğ•s³‰ğ‚ğ•\¦‚·‚éB
+                    // æ­£è§£ä¸æ­£è§£ã‚’è¡¨ç¤ºã™ã‚‹ã€‚
                     isDisplayingTrueFalse = true;
                     txtTrueFalse.gameObject.SetActive(true);
-                    txtTrueFalse.text = "ŠÔØ‚ê";
+                    txtTrueFalse.text = "æ™‚é–“åˆ‡ã‚Œ";
                 }
             }
         }
@@ -219,23 +219,23 @@ public class SpeechGameManager : MonoBehaviour
         isGameOver = true;
         resultUi.SetActive(true);
 
-        // Œ‹‰Ê‚ğ•\¦‚·‚éB
+        // çµæœã‚’è¡¨ç¤ºã™ã‚‹ã€‚
         var resultText = "?";
         if (playerHp.hp == 0)
         {
-            resultText = "”s–k...";
+            resultText = "æ•—åŒ—...";
         }
         else if (playerHp.hp == playerHp.hpMax)
         {
-            resultText = "Š®‘SŸ—˜!";
+            resultText = "å®Œå…¨å‹åˆ©!";
         }
         else if (playerHp.hp >= playerHp.hpMax * 0.7)
         {
-            resultText = "ˆ³Ÿ";
+            resultText = "åœ§å‹";
         }
         else
         {
-            resultText = "Ÿ—˜";
+            resultText = "å‹åˆ©";
         }
         resultUi.transform.Find("Result").GetComponent<TextMeshProUGUI>().text = resultText;
     }
