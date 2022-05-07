@@ -129,7 +129,6 @@ public class MiningGameManager : MonoBehaviour
                 if (pressDown || pressUp || pressLeft || pressRight)
                 {
                     var target = default(MiningBox);
-                    var ok = false;
                     if (pressDown) target = down;
                     else if (pressUp) target = up;
                     else if (pressLeft) target = left;
