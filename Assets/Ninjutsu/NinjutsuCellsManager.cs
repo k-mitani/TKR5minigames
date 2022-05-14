@@ -52,6 +52,7 @@ public class NinjutsuCellsManager : MonoBehaviour
         foreach (var cell in cells)
         {
             cell.CharacterSprite = spritesShuffled.Dequeue();
+            cell.SetSelectable(true);
         }
     }
 
