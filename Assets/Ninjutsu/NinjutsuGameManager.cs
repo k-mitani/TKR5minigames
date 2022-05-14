@@ -147,11 +147,26 @@ public class NinjutsuGameManager : MonoBehaviour
     {
         // 結果を表示する。
         txtQuizResult.gameObject.SetActive(true);
-        txtQuizResult.text = ok ? "正解!" : "時間切れ";
 
-        results[quizCount] = ok ? NinjutsuQuizResult.Correct : NinjutsuQuizResult.Incorrect;
+        var isFast = quizRemainingTime / quizDuration > 0.666;
+        if (ok && isFast)
+        {
+            txtQuizResult.text = "素晴らしい!";
+            results[quizCount] = NinjutsuQuizResult.CorrectFast;
+        }
+        else if (ok)
+        {
+            txtQuizResult.text = "正解!";
+            results[quizCount] = NinjutsuQuizResult.CorrectSlow;
+        }
+        else
+        {
+            txtQuizResult.text = "時間切れ";
+            results[quizCount] = NinjutsuQuizResult.Incorrect;
+        }
         txtQuizResults.text = string.Join("   ", results.Select(r =>
-            r == NinjutsuQuizResult.Correct ? "○" :
+            r == NinjutsuQuizResult.CorrectFast ? "◎" :
+            r == NinjutsuQuizResult.CorrectSlow ? "○" :
             r == NinjutsuQuizResult.Incorrect ? "×" :
             "  "));
 
@@ -179,7 +194,8 @@ public class NinjutsuGameManager : MonoBehaviour
             if (results[i] == NinjutsuQuizResult.None) results[i] = NinjutsuQuizResult.Incorrect;
         }
         txtQuizResults.text = string.Join("   ", results.Select(r =>
-            r == NinjutsuQuizResult.Correct ? "○" :
+            r == NinjutsuQuizResult.CorrectFast ? "◎" :
+            r == NinjutsuQuizResult.CorrectSlow ? "○" :
             r == NinjutsuQuizResult.Incorrect ? "×" :
             "  "));
 
@@ -187,7 +203,10 @@ public class NinjutsuGameManager : MonoBehaviour
         targetCurtain.gameObject.SetActive(false);
 
         resultUi.SetActive(true);
-        var correctRate = 1.0f * results.Count(r => r == NinjutsuQuizResult.Correct) / results.Length;
+        var correctRate = (
+            (2.0f * results.Count(r => r == NinjutsuQuizResult.CorrectFast)) +
+            (1.0f * results.Count(r => r == NinjutsuQuizResult.CorrectSlow))
+            ) / (results.Length * 2);
         if (correctRate < 0.5)
         {
             txtFinalResult.text = "失敗...";
@@ -228,6 +247,7 @@ public enum NinjutsuGameState
 public enum NinjutsuQuizResult
 {
     None,
-    Correct,
+    CorrectFast,
+    CorrectSlow,
     Incorrect,
 }
