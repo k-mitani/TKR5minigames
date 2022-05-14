@@ -5,16 +5,19 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
+  - enabled: 1
+    path: Assets/Menu/MenuScene.unity
+    guid: 07a17bcc2ff71ec4088b3ebc5fdc9e6b
+  - enabled: 1
     path: Assets/Speech/SpeechScene.unity
     guid: 213566c7038532943a64e280198a52fb
-  - enabled: 0
+  - enabled: 1
     path: Assets/Farming/FarmingScene.unity
     guid: cd2849f2eac96e5458cc4619cfb1a2df
-  - enabled: 0
+  - enabled: 1
     path: Assets/Manner/MannerScene.unity
     guid: 1e72f0fd5a5c7c7488c8af35ef44a8e5
-  - enabled: 0
+  - enabled: 1
     path: Assets/Mining/MiningScene.unity
     guid: adf4e279f3f75a942ba3207dc0b3fc32
   - enabled: 1

@@ -74,8 +74,8 @@ public class MannerGameManager : MonoBehaviour
         var rate = cells.CompleteRate;
         if (rate < 0.5) resultText = "失敗...";
         else if (rate < 0.75) resultText = "まずまず";
-        else if (rate < 1) resultText = "成功";
-        else resultText = "大成功!";
+        else if (rate < 1) resultText = "上出来";
+        else resultText = "完璧!";
 
 
         var result = resultUi.transform.Find("Result").GetComponent<TextMeshProUGUI>();

@@ -194,7 +194,7 @@ public class MiningGameManager : MonoBehaviour
         // 30秒で25以下なら
         else if (score < remainingTimeMax * 0.86)
         {
-            resultText = "成功";
+            resultText = "上出来";
         }
         else
         {

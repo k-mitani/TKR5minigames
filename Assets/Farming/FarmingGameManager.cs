@@ -120,7 +120,7 @@ public class FarmingGameManager : MonoBehaviour
         }
         else if (filledRatio < 1)
         {
-            resultText = "優秀";
+            resultText = "上出来";
         }
         else
         {
