@@ -1,0 +1,3 @@
+[submodule "Assets/External"]
+	path = Assets/External
+	url = github:k-mitani/TKR5minigamesVendor.git
