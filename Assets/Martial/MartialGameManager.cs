@@ -7,6 +7,7 @@ public class MartialGameManager : MonoBehaviour
 {
     private GameStates states;
     private GameObject uiSelectAction;
+    public MartialTopUI uiTop;
     private Transform pointer;
 
     public MartialCharacter player;
@@ -18,12 +19,15 @@ public class MartialGameManager : MonoBehaviour
     public Material defaultSelectBoxMaterial;
     public Material selectedSelectBoxMaterial;
 
+    private bool skipAnimation;
+
     // Start is called before the first frame update
     void Start()
     {
         states = new GameStates(this);
         
         uiSelectAction = GameObject.Find("SelectActionUI");
+        uiTop = GameObject.Find("TopUI").GetComponent<MartialTopUI>();
         pointer = GameObject.Find("Pointer").GetComponent<Transform>();
         
         player.GetComponent<Animator>().SetBool("IsLongSword", true);
@@ -96,7 +100,13 @@ public class MartialGameManager : MonoBehaviour
             else if (states.SetRotation.IsActive)
             {
                 player.MovePhaseFinalDirection = player.shadow.rotation;
-                states.Activate(s => s.Move);
+                player.nextAction = MartialCharacter.NextAction.Move;
+                states.Activate(s => s.PreMove);
+            }
+            else if (states.PreMove.IsActive)
+            {
+                // 待機時間をスキップする。
+                skipAnimation = true;
             }
             else if (states.Move.IsActive)
             {
@@ -117,6 +127,11 @@ public class MartialGameManager : MonoBehaviour
             {
                 states.Activate(s => s.SetMovePosition);
             }
+            else if (states.PreMove.IsActive)
+            {
+                // 待機時間をスキップする。
+                skipAnimation = true;
+            }
         }
     }
 
@@ -128,19 +143,73 @@ public class MartialGameManager : MonoBehaviour
         }
     }
 
-    private void OnMoveStateEnter()
+    public void OnSpecialButtonClick()
+    {
+        if (states.SelectAction.IsActive)
+        {
+            states.Activate(s => s.SetMovePosition);
+        }
+    }
+
+    public void OnGuardButtonClick()
+    {
+        if (states.SelectAction.IsActive)
+        {
+            player.nextAction = MartialCharacter.NextAction.Guard;
+            states.Activate(s => s.PreMove);
+        }
+    }
+
+    private void OnPreMove()
     {
         // 敵の行動を決める。
         foreach (var enemy in enemies)
         {
-            // とりあえずプレーヤーに向かってくるようにする。
-            var dest = player.transform.position;
-            var from = enemy.transform.position;
-            var distance = Mathf.Min(Mathf.Sqrt(enemy.MaxMoveAmount), (dest - from).magnitude);
+            if (!enemy.IsAlive) continue;
 
-            enemy.MovePhaseDestination = from + (dest - from).normalized * distance;
+            // 体力が低いならたまに防御する。
+            if (enemy.hp < 0.5f && Random.value > 0.5f)
+            {
+                enemy.nextAction = MartialCharacter.NextAction.Guard;
+            }
+            else
+            {
+                // とりあえずプレーヤーに向かってくるようにする。
+                enemy.nextAction = MartialCharacter.NextAction.Move;
+
+                var dest = player.transform.position;
+                var from = enemy.transform.position;
+                // プレーヤーの位置の0.75m手前を目標位置にする。
+                var maxDistance = Mathf.Max((dest - from).magnitude - 0.75f, 0);
+                var distance = Mathf.Min(Mathf.Sqrt(enemy.MaxMoveAmount), maxDistance);
+
+                enemy.MovePhaseDestination = from + (dest - from).normalized * distance;
+                enemy.MovePhaseFinalDirection = null;
+            }
         }
 
+        StartCoroutine(Do());
+        IEnumerator Do()
+        {
+            // 各キャラの行動を表示する。
+            foreach (var c in characters.Where(c => c.IsAlive)) c.ShowNextAction();
+
+            skipAnimation = false;
+            for (int i = 0; i < 8; i++)
+            {
+                yield return new WaitForSeconds(0.1f);
+                if (skipAnimation) break;
+            }
+
+            // 一定時間表示したら移動状態に遷移する。
+            foreach (var c in characters.Where(c => c.IsAlive)) c.HideNextAction();
+
+            states.Activate(s => s.Move);
+        }
+    }
+
+    private void OnMove()
+    {
         // 各キャラの移動前の処理を行う。
         foreach (var c in characters) c.OnBeforeMove();
 
@@ -153,15 +222,22 @@ public class MartialGameManager : MonoBehaviour
             // 移動後の処理を行う。
             foreach (var c in characters) c.OnAfterMove();
             
-            // 当たり判定が効かないので1フレーム待つ。
-            yield return null;
-            yield return null;
-
             // 攻撃処理を行う。
             foreach (var c in characters) yield return c.OnAttack(characters);
 
-            states.Activate(s => s.SelectAction);
+            // ターン終了状態に移行する。
+            states.Activate(s => s.TurnEnd);
         }
+    }
+
+    private void OnTurnEnd()
+    {
+        foreach (var c in characters) c.OnTurnEnd();
+
+        states.Activate(s => s.SelectAction);
+
+        // UIを更新する。
+        uiTop.textKiai.text = $"{player.kiai}/{player.kiaiMax}";
     }
 
     public MartialCharacter SelectCharacterResult { get; private set; }
@@ -201,7 +277,7 @@ public class MartialGameManager : MonoBehaviour
         public SetRotation SetRotation { get; set; } = new SetRotation();
         public PreMove PreMove { get; set; } = new PreMove();
         public Move Move { get; set; } = new Move();
-        public PostMove PostMove { get; set; } = new PostMove();
+        public TurnEnd TurnEnd { get; set; } = new TurnEnd();
         public GameStates(MartialGameManager gm)
         {
             GetType()
@@ -273,6 +349,7 @@ public class MartialGameManager : MonoBehaviour
     {
         public override void OnEnter()
         {
+            gm.OnPreMove();
         }
         public override void OnExit()
         {
@@ -283,17 +360,18 @@ public class MartialGameManager : MonoBehaviour
     {
         public override void OnEnter()
         {
-            gm.OnMoveStateEnter();
+            gm.OnMove();
         }
         public override void OnExit()
         {
         }
     }
 
-    public class PostMove : GameState
+    public class TurnEnd : GameState
     {
         public override void OnEnter()
         {
+            gm.OnTurnEnd();
         }
         public override void OnExit()
         {
