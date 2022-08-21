@@ -16,7 +16,6 @@ public class MartialCharacter : MonoBehaviour
     public Transform shadow;
     public Transform moveRange;
     public Transform attackRange;
-    public SphereCollider hitRange;
     public MeshRenderer selectionBox;
     public Canvas canvas;
     public Slider sliderHp;
@@ -39,7 +38,6 @@ public class MartialCharacter : MonoBehaviour
         shadow = parent.Find("Common/Shadow");
         moveRange = parent.Find("Common/MoveRange");
         attackRange = parent.Find("Common/AttackRange");
-        hitRange = parent.Find("Common/HitRange").GetComponent<SphereCollider>();
         selectionBox = parent.Find("Common/SelectionBox").GetComponent<MeshRenderer>();
         canvas = parent.Find("Common/Canvas").GetComponent<Canvas>();
         canvas.transform.SetParent(transform);
@@ -162,7 +160,6 @@ public class MartialCharacter : MonoBehaviour
         // 攻撃範囲をセットする。
         moveRange.position = transform.position;
         attackRange.SetPositionAndRotation(transform.position, transform.rotation);
-        hitRange.transform.position = transform.position;
         selectionBox.transform.position = transform.position;
     }
 
@@ -177,8 +174,9 @@ public class MartialCharacter : MonoBehaviour
         foreach (var enemy in all.Except(new[] { this }).Where(x => IsOpponent(x)))
         {
             if (!enemy.IsAlive) continue;
-
-            if (enemy.hitRange.bounds.Intersects(attackRange.GetComponent<MeshCollider>().bounds))
+            // 攻撃範囲に位置しているなら攻撃対象にする。
+            var p = enemy.transform.position;
+            if (attackRange.GetComponent<MeshCollider>().ClosestPoint(p) == p)
             {
                 enemiesInAttackRange.Add(enemy);
             }
