@@ -16,6 +16,9 @@ public class MartialCharacter : MonoBehaviour
     public int hp = 100;
     public int kiai;
     public int kiaiMax;
+    public List<MartialSpecialActionTag> specials = new();
+    public List<MartialSpecialAction> specialActions = new();
+    public List<MartialSpecialActionCandidateState> specialActionStates = new();
 
     public Transform shadow;
     public Transform moveRange;
@@ -29,6 +32,8 @@ public class MartialCharacter : MonoBehaviour
     public Rigidbody rb;
 
     public float MaxMoveAmount => prowess / 25f;
+
+    public Quaternion turnStartRotation;
 
     public NextAction nextAction { get; set; }
     public Vector3 MovePhaseDestination { get; set; }
@@ -44,6 +49,8 @@ public class MartialCharacter : MonoBehaviour
 
         kiaiMax = Mathf.Max(2, kiaiMax);
         kiai = kiaiMax / 2;
+        specialActions = specials.Select(tag => MartialSpecialAction.Actions.Find(a => a.Tag == tag)).ToList();
+        specialActionStates = specials.Select(_ => MartialSpecialActionCandidateState.CanDo).ToList();
 
         // 必要な要素を取得する。
         var parent = transform.parent;
@@ -325,6 +332,26 @@ public class MartialCharacter : MonoBehaviour
         {
             kiai = Mathf.Min(kiai + 1, kiaiMax);
         }
+
+        // 秘技の実行可能状態をセットする。
+        for (int i = 0; i < specialActions.Count; i++)
+        {
+            var action = specialActions[i];
+            specialActionStates[i] = MartialSpecialActionCandidateState.CanDo;
+            if (kiai < action.Kiai)
+            {
+                specialActionStates[i] = MartialSpecialActionCandidateState.LackOfKiai;
+            }
+            else if (
+                action.Type == MartialSpecialActionType.BoldLine ||
+                action.Type == MartialSpecialActionType.ThreeLine ||
+                action.Type == MartialSpecialActionType.Sword)
+            {
+                specialActionStates[i] = MartialSpecialActionCandidateState.OutOfRange;
+            }
+        }
+
+        turnStartRotation = transform.rotation;
     }
 
     public enum NextAction

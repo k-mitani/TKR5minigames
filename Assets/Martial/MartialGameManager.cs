@@ -5,8 +5,11 @@ using UnityEngine;
 
 public class MartialGameManager : MonoBehaviour
 {
+    public MessageBox messageBox;
+
     private GameStates states;
     private GameObject uiSelectAction;
+    private MartialSpecialListUI uiSpecialList;
     public MartialTopUI uiTop;
     private Transform pointer;
 
@@ -27,11 +30,19 @@ public class MartialGameManager : MonoBehaviour
         states = new GameStates(this);
         
         uiSelectAction = GameObject.Find("SelectActionUI");
+        uiSpecialList = GameObject.Find("SpecialListUI").GetComponent<MartialSpecialListUI>();
+        uiSpecialList.gameObject.SetActive(false);
         uiTop = GameObject.Find("TopUI").GetComponent<MartialTopUI>();
         pointer = GameObject.Find("Pointer").GetComponent<Transform>();
-        
+
         player.GetComponent<Animator>().SetBool("IsLongSword", true);
-        states.Activate(s => s.SelectAction);
+
+        StartCoroutine(Do());
+        IEnumerator Do()
+        {
+            yield return new WaitForEndOfFrame();
+            states.Activate(s => s.TurnEnd);
+        }
     }
 
     // Update is called once per frame
@@ -147,7 +158,48 @@ public class MartialGameManager : MonoBehaviour
     {
         if (states.SelectAction.IsActive)
         {
-            states.Activate(s => s.SetMovePosition);
+            if (uiSpecialList.gameObject.activeSelf)
+            {
+                uiSpecialList.gameObject.SetActive(false);
+            }
+            else
+            {
+                // 技一覧を表示する。
+                uiSpecialList.Show(player, selected =>
+                {
+                    var actionIndex = player.specialActions.IndexOf(selected);
+                    var state = player.specialActionStates[actionIndex];
+                    if (state == MartialSpecialActionCandidateState.LackOfKiai)
+                    {
+                        messageBox.Show("気合が不足しています。");
+                    }
+                    else if (state == MartialSpecialActionCandidateState.OutOfRange)
+                    {
+                        messageBox.Show("攻撃範囲外です。");
+                    }
+                    else
+                    {
+                        if (selected.Type == MartialSpecialActionType.Self ||
+                            selected.Type == MartialSpecialActionType.Guard)
+                        {
+                            messageBox.Show(
+                                $"「{selected.Name}」を実行します。よろしいですか？",
+                                MessageBoxType.OkCancel,
+                                res =>
+                                {
+                                    if (res == MessageBoxResult.Cancel)
+                                    {
+                                        return;
+                                    }
+
+                                    uiSpecialList.Hide();
+                                    player.nextAction = MartialCharacter.NextAction.Special;
+                                    states.Activate(x => x.PreMove);
+                                });
+                        }
+                    }
+                });
+            }
         }
     }
 
@@ -263,9 +315,9 @@ public class MartialGameManager : MonoBehaviour
         public MartialGameManager gm { get; set; }
         public bool IsActive { get; set; }
         
-        public virtual void OnEnter() { }
+        public virtual void OnEnter(GameState oldState, GameState newState) { }
         public virtual bool OnExitting() => true;
-        public virtual void OnExit() { }
+        public virtual void OnExit(GameState oldState, GameState newState) { }
     }
 
     public class GameStates
@@ -296,19 +348,19 @@ public class MartialGameManager : MonoBehaviour
                 if (oldState != null) oldState.IsActive = false;
                 newState.IsActive = true;
                 Current = newState;
-                oldState?.OnExit();
-                newState.OnEnter();
+                oldState?.OnExit(oldState, newState);
+                newState.OnEnter(oldState, newState);
             }
         }
     }
 
     public class SelectAction : GameState
     {
-        public override void OnEnter()
+        public override void OnEnter(GameState oldState, GameState newState)
         {
             gm.uiSelectAction.SetActive(true);
         }
-        public override void OnExit()
+        public override void OnExit(GameState oldState, GameState newState)
         {
             gm.uiSelectAction.SetActive(false);
         }
@@ -316,29 +368,34 @@ public class MartialGameManager : MonoBehaviour
 
     public class SetMovePosition : GameState
     {
-        public override void OnEnter()
+        public override void OnEnter(GameState oldState, GameState newState)
         {
             gm.player.ShowShadow();
             gm.player.ShowMoveRange();
             gm.player.moveRange.position = gm.player.transform.position;
         }
-        public override void OnExit()
+        public override void OnExit(GameState oldState, GameState newState)
         {
             gm.player.HideShadow();
             gm.player.HideMoveRange();
+            if (newState is SelectAction)
+            {
+                // 向きをリセットする。
+                gm.player.transform.rotation = gm.player.turnStartRotation;
+            }
         }
     }
 
     public class SetRotation : GameState
     {
-        public override void OnEnter()
+        public override void OnEnter(GameState oldState, GameState newState)
         {
             gm.player.ShowShadow();
             gm.player.ShowAttackRange();
             gm.player.attackRange.position = gm.player.shadow.position;
             gm.player.attackRange.rotation = gm.player.shadow.rotation;
         }
-        public override void OnExit()
+        public override void OnExit(GameState oldState, GameState newState)
         {
             gm.player.HideShadow();
             gm.player.HideAttackRange();
@@ -347,33 +404,33 @@ public class MartialGameManager : MonoBehaviour
 
     public class PreMove : GameState
     {
-        public override void OnEnter()
+        public override void OnEnter(GameState oldState, GameState newState)
         {
             gm.OnPreMove();
         }
-        public override void OnExit()
+        public override void OnExit(GameState oldState, GameState newState)
         {
         }
     }
 
     public class Move : GameState
     {
-        public override void OnEnter()
+        public override void OnEnter(GameState oldState, GameState newState)
         {
             gm.OnMove();
         }
-        public override void OnExit()
+        public override void OnExit(GameState oldState, GameState newState)
         {
         }
     }
 
     public class TurnEnd : GameState
     {
-        public override void OnEnter()
+        public override void OnEnter(GameState oldState, GameState newState)
         {
             gm.OnTurnEnd();
         }
-        public override void OnExit()
+        public override void OnExit(GameState oldState, GameState newState)
         {
         }
     }
