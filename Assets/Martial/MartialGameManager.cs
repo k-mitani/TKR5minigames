@@ -7,9 +7,9 @@ public class MartialGameManager : MonoBehaviour
 {
     public MessageBox messageBox;
 
-    private GameStates states;
+    public GameStates states;
     private GameObject uiSelectAction;
-    private MartialSpecialListUI uiSpecialList;
+    public MartialSpecialListUI uiSpecialList;
     public MartialTopUI uiTop;
     private Transform pointer;
 
@@ -95,7 +95,7 @@ public class MartialGameManager : MonoBehaviour
             {
                 // ポインターの方を向く。
                 player.shadow.LookAt(pointer.position);
-                player.attackRange.rotation = player.shadow.rotation;
+                player.attackRanges.transform.rotation = player.shadow.rotation;
             }
         }
 
@@ -130,6 +130,10 @@ public class MartialGameManager : MonoBehaviour
         // 右クリック: 戻る
         if (Input.GetMouseButtonDown(1))
         {
+            if (states.SelectAction.IsActive && uiSpecialList.gameObject.activeSelf)
+            {
+                uiSpecialList.Hide();
+            }
             if (states.SetMovePosition.IsActive)
             {
                 states.Activate(s => s.SelectAction);
@@ -165,40 +169,7 @@ public class MartialGameManager : MonoBehaviour
             else
             {
                 // 技一覧を表示する。
-                uiSpecialList.Show(player, selected =>
-                {
-                    var actionIndex = player.specialActions.IndexOf(selected);
-                    var state = player.specialActionStates[actionIndex];
-                    if (state == MartialSpecialActionCandidateState.LackOfKiai)
-                    {
-                        messageBox.Show("気合が不足しています。");
-                    }
-                    else if (state == MartialSpecialActionCandidateState.OutOfRange)
-                    {
-                        messageBox.Show("攻撃範囲外です。");
-                    }
-                    else
-                    {
-                        if (selected.Type == MartialSpecialActionType.Self ||
-                            selected.Type == MartialSpecialActionType.Guard)
-                        {
-                            messageBox.Show(
-                                $"「{selected.Name}」を実行します。よろしいですか？",
-                                MessageBoxType.OkCancel,
-                                res =>
-                                {
-                                    if (res == MessageBoxResult.Cancel)
-                                    {
-                                        return;
-                                    }
-
-                                    uiSpecialList.Hide();
-                                    player.nextAction = MartialCharacter.NextAction.Special;
-                                    states.Activate(x => x.PreMove);
-                                });
-                        }
-                    }
-                });
+                uiSpecialList.Show(this, player);
             }
         }
     }
@@ -252,9 +223,21 @@ public class MartialGameManager : MonoBehaviour
                 yield return new WaitForSeconds(0.1f);
                 if (skipAnimation) break;
             }
-
-            // 一定時間表示したら移動状態に遷移する。
             foreach (var c in characters.Where(c => c.IsAlive)) c.HideNextAction();
+
+            // 秘技を実行する。
+            foreach (var c in characters
+                .Where(c => c.IsAlive && c.nextAction == MartialCharacter.NextAction.Special)
+                .OrderByDescending(c => c.prowess))
+            {
+                // 途中で倒されているかもしれないので生存確認を行う。
+                if (!c.IsAlive) continue;
+                var action = c.nextActionSpecial;
+                yield return messageBox.ShowDialogAsync($"{c.name}が「{action.Name}」を実行します。");
+                
+                yield return action.DoAction(this, c);
+            }
+
 
             states.Activate(s => s.Move);
         }
@@ -305,7 +288,8 @@ public class MartialGameManager : MonoBehaviour
 
         targets.ForEach(t => t.ShowSelectionBox());
         while (isSelectingCharacter) yield return new WaitForSeconds(0.1f);
-        var selected = selectCharacterMouseHoveredBox.parent.parent.GetComponentInChildren<MartialCharacter>();
+
+        var selected = characters.First(c => c.selectionBox == selectCharacterMouseHoveredBox);
         SelectCharacterResult = selected;
         targets.ForEach(t => t.HideSelectionBox());
     }
@@ -363,6 +347,7 @@ public class MartialGameManager : MonoBehaviour
         public override void OnExit(GameState oldState, GameState newState)
         {
             gm.uiSelectAction.SetActive(false);
+            gm.uiSpecialList.Hide();
         }
     }
 
@@ -391,14 +376,14 @@ public class MartialGameManager : MonoBehaviour
         public override void OnEnter(GameState oldState, GameState newState)
         {
             gm.player.ShowShadow();
-            gm.player.ShowAttackRange();
-            gm.player.attackRange.position = gm.player.shadow.position;
-            gm.player.attackRange.rotation = gm.player.shadow.rotation;
+            gm.player.attackRanges.ShowMain();
+            gm.player.attackRanges.transform.position = gm.player.shadow.position;
+            gm.player.attackRanges.transform.rotation = gm.player.shadow.rotation;
         }
         public override void OnExit(GameState oldState, GameState newState)
         {
             gm.player.HideShadow();
-            gm.player.HideAttackRange();
+            gm.player.attackRanges.HideAll();
         }
     }
 

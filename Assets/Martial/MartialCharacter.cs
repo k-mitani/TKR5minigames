@@ -22,13 +22,16 @@ public class MartialCharacter : MonoBehaviour
 
     public Transform shadow;
     public Transform moveRange;
-    public Transform attackRange;
+    public MartialAttackRanges attackRanges;
     public MeshRenderer selectionBox;
     public Canvas canvas;
     public Slider sliderHp;
     public Image panelNextAction;
     public TextMeshProUGUI textNextAction;
+    private ParticleSystem particleAttackUp;
+    private ParticleSystem particleGuardUp;
 
+    public Animator animator;
     public Rigidbody rb;
 
     public float MaxMoveAmount => prowess / 25f;
@@ -38,17 +41,25 @@ public class MartialCharacter : MonoBehaviour
     public NextAction nextAction { get; set; }
     public Vector3 MovePhaseDestination { get; set; }
     public Quaternion? MovePhaseFinalDirection { get; set; }
+    public MartialSpecialAction nextActionSpecial { get; set; }
     public bool IsAlive => hp > 0;
+
+    private MartialCharacter attackTarget;
+    private bool isAnimating;
+
+    public MartialSpecialAction.Gouriki gourikiState;
+    public MartialSpecialAction.Teppeki teppekiState;
+    public MartialSpecialAction.CounterAttack counterAttackState;
 
     // Start is called before the first frame update
     void Start()
     {
         gm = GameObject.Find("GameManager").GetComponent<MartialGameManager>();
 
+        animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
 
         kiaiMax = Mathf.Max(2, kiaiMax);
-        kiai = kiaiMax / 2;
         specialActions = specials.Select(tag => MartialSpecialAction.Actions.Find(a => a.Tag == tag)).ToList();
         specialActionStates = specials.Select(_ => MartialSpecialActionCandidateState.CanDo).ToList();
 
@@ -56,7 +67,7 @@ public class MartialCharacter : MonoBehaviour
         var parent = transform.parent;
         shadow = parent.Find("Common/Shadow");
         moveRange = parent.Find("Common/MoveRange");
-        attackRange = parent.Find("Common/AttackRange");
+        attackRanges = parent.Find("Common/AttackRanges").GetComponent<MartialAttackRanges>();
         selectionBox = parent.Find("Common/SelectionBox").GetComponent<MeshRenderer>();
         canvas = parent.Find("Common/Canvas").GetComponent<Canvas>();
         canvas.transform.SetParent(transform);
@@ -64,6 +75,13 @@ public class MartialCharacter : MonoBehaviour
         if (isEnemy) sliderHp.fillRect.GetComponent<Image>().color = Color.red;
         panelNextAction = canvas.transform.Find("NextAction").GetComponent<Image>();
         textNextAction = panelNextAction.transform.Find("Text").GetComponent<TextMeshProUGUI>();
+        
+        particleAttackUp = parent.Find("Common/Particles/AttackUp").GetComponent<ParticleSystem>();
+        particleAttackUp.transform.SetParent(transform);
+        particleGuardUp = parent.Find("Common/Particles/GuardUp").GetComponent<ParticleSystem>();
+        particleGuardUp.transform.SetParent(transform);
+
+
 
         // 移動範囲をセットする。
         var scale = moveRange.transform.localScale;
@@ -72,12 +90,13 @@ public class MartialCharacter : MonoBehaviour
         moveRange.transform.localScale = scale;
 
         HideMoveRange();
-        HideAttackRange();
+        attackRanges.HideAll();
         HideShadow();
         HideSelectionBox();
         HideNextAction();
     }
 
+    #region 表示非表示系
     public void ShowMoveRange(Vector3? position = null)
     {
         if (position != null) moveRange.position = position.Value;
@@ -86,16 +105,6 @@ public class MartialCharacter : MonoBehaviour
     public void HideMoveRange()
     {
         moveRange.GetComponent<Renderer>().enabled = false;
-    }
-
-    public void ShowAttackRange(Vector3? position = null)
-    {
-        if (position != null) attackRange.position = position.Value;
-        attackRange.GetComponent<Renderer>().enabled = true;
-    }
-    public void HideAttackRange()
-    {
-        attackRange.GetComponent<Renderer>().enabled = false;
     }
 
     public void ShowShadow()
@@ -142,7 +151,6 @@ public class MartialCharacter : MonoBehaviour
         panelNextAction.gameObject.SetActive(false);
     }
 
-
     private void CopyTransforms(Transform src, Transform dest)
     {
         for (int i = 0; i < dest.childCount; i++)
@@ -156,11 +164,16 @@ public class MartialCharacter : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    public void PlayAttackUpParticle()
     {
-
+        particleAttackUp.Play();
     }
+
+    public void PlayGuardUpParticle()
+    {
+        particleGuardUp.Play();
+    }
+    #endregion
 
     public void OnBeforeMove()
     {
@@ -169,7 +182,7 @@ public class MartialCharacter : MonoBehaviour
         // 移動する必要があるなら
         if (nextAction == NextAction.Move)
         {
-            GetComponent<Animator>().SetBool("IsMoving", true);
+            animator.SetBool("IsMoving", true);
 
             // 移動先を向く。
             transform.LookAt(MovePhaseDestination);
@@ -181,9 +194,9 @@ public class MartialCharacter : MonoBehaviour
             rb.velocity = transform.forward * distance;
         }
         // 防御する必要があるなら
-        else if (nextAction == NextAction.Guard)
+        else if (nextAction == NextAction.Guard || (nextAction == NextAction.Special && nextActionSpecial is MartialSpecialAction.CounterAttack))
         {
-            GetComponent<Animator>().SetBool("IsGuarding", true);
+            animator.SetBool("IsGuarding", true);
         }
     }
 
@@ -193,7 +206,7 @@ public class MartialCharacter : MonoBehaviour
 
         if (nextAction == NextAction.Move)
         {
-            GetComponent<Animator>().SetBool("IsMoving", false);
+            animator.SetBool("IsMoving", false);
 
             // 移動を止める。
             rb.velocity = Vector3.zero;
@@ -204,73 +217,53 @@ public class MartialCharacter : MonoBehaviour
 
         // 攻撃範囲をセットする。
         moveRange.position = transform.position;
-        attackRange.SetPositionAndRotation(transform.position, transform.rotation);
+        attackRanges.transform.SetPositionAndRotation(transform.position, transform.rotation);
         selectionBox.transform.position = transform.position;
     }
 
-    private MartialCharacter attackTarget;
-    private bool isAnimating;
     internal IEnumerator OnAttack(IEnumerable<MartialCharacter> all)
     {
         if (!IsAlive) yield break;
 
         // 移動時以外は何もしない。
         if (nextAction != NextAction.Move) yield break;
+        
+        // 攻撃範囲内に敵がいないなら何もしない。
+        var enemiesInAttackRange = MartialAttackUtil.FindEnemiesInAttackRange(this, all);
+        if (enemiesInAttackRange.Count == 0) yield break;
 
+        attackRanges.ShowMain();
 
-        attackTarget = null;
-        var enemiesInAttackRange = new List<MartialCharacter>();
-        foreach (var enemy in all.Except(new[] { this }).Where(x => IsOpponent(x)))
+        // プレーヤーの場合
+        yield return MartialAttackUtil.SelectAttackTarget(gm, this, enemiesInAttackRange);
+        var target = MartialAttackUtil.SelectAttackTargetResult;
+
+        yield return AttackTo(target, false);
+        attackRanges.HideAll();
+    }
+
+    public IEnumerator AttackTo(MartialCharacter target, bool isCounter)
+    {
+        attackTarget = target;
+        isAnimating = true;
+        animator.SetTrigger("Attack1");
+        while (isAnimating) yield return new WaitForSeconds(0.1f);
+
+        // 敵が反撃待ちなら、反撃処理を行う。
+        if (!isCounter && target.IsAlive && target.counterAttackState != null)
         {
-            if (!enemy.IsAlive) continue;
-            // 攻撃範囲に位置しているなら攻撃対象にする。
-            var p = enemy.transform.position;
-            if (attackRange.GetComponent<MeshCollider>().ClosestPoint(p) == p)
-            {
-                enemiesInAttackRange.Add(enemy);
-            }
-        }
-        // 攻撃範囲内に敵がいる場合。
-        if (enemiesInAttackRange.Count > 0)
-        {
-            ShowAttackRange();
-
-            // プレーヤーの場合
-            if (isPlayer)
-            {
-                // 対象が1つしかないならそれを選択する。
-                if (enemiesInAttackRange.Count == 1)
-                {
-                    attackTarget = enemiesInAttackRange[0];
-                }
-                // 対象が複数あればプレーヤーに選択させる。
-                else
-                {
-                    yield return gm.SelectCharacter(enemiesInAttackRange);
-                    attackTarget = gm.SelectCharacterResult;
-                }
-            }
-            // NPCの場合
-            else
-            {
-                // ランダムに攻撃対象を選ぶ
-                attackTarget = enemiesInAttackRange[Random.Range(0, enemiesInAttackRange.Count)];
-            }
-            isAnimating = true;
-            GetComponent<Animator>().SetTrigger("Attack1");
-            while (isAnimating) yield return new WaitForSeconds(0.1f);
-            HideAttackRange();
+            target.animator.SetBool("IsGuarding", false);
+            target.transform.LookAt(transform);
+            yield return target.AttackTo(this, true);
+            target.animator.SetBool("IsGuarding", true);
+            yield return new WaitForSeconds(0.5f);
         }
     }
 
     public void OnDamage(MartialCharacter opponent)
     {
-        var damage = 100f
-            * opponent.prowess
-            / prowess
-            * (nextAction == NextAction.Guard ? 0.5f : 1f)
-            ;
-        GetComponent<Animator>().SetTrigger("Damage1");
+        var damage = MartialAttackUtil.CalculateDamage(opponent, this);
+        animator.SetTrigger("Damage1");
 
         // 気合を+1する。
         kiai = Mathf.Min(kiai + 1, kiaiMax);
@@ -293,7 +286,7 @@ public class MartialCharacter : MonoBehaviour
 
             if (hp == 0)
             {
-                GetComponent<Animator>().SetTrigger("Death4");
+                animator.SetTrigger("Death4");
                 GetComponent<CapsuleCollider>().enabled = false;
 
                 isAnimating = true;
@@ -302,7 +295,6 @@ public class MartialCharacter : MonoBehaviour
             }
         }
     }
-
 
     public void OnAnimationEvent(string name)
     {
@@ -323,7 +315,8 @@ public class MartialCharacter : MonoBehaviour
 
     public void OnTurnEnd()
     {
-        GetComponent<Animator>().SetBool("IsGuarding", false);
+        animator.SetBool("IsGuarding", false);
+        counterAttackState = null;
 
         // 気合を+1する。
         kiai = Mathf.Min(kiai + 1, kiaiMax);
@@ -342,12 +335,24 @@ public class MartialCharacter : MonoBehaviour
             {
                 specialActionStates[i] = MartialSpecialActionCandidateState.LackOfKiai;
             }
-            else if (
+            else if (action.Type == MartialSpecialActionType.Sword ||
                 action.Type == MartialSpecialActionType.BoldLine ||
-                action.Type == MartialSpecialActionType.ThreeLine ||
-                action.Type == MartialSpecialActionType.Sword)
+                action.Type == MartialSpecialActionType.ThreeLine)
             {
-                specialActionStates[i] = MartialSpecialActionCandidateState.OutOfRange;
+                var inRange = MartialAttackUtil.FindEnemiesInAttackRange(this, gm.characters);
+                if (action.Type == MartialSpecialActionType.BoldLine)
+                {
+                    inRange = MartialAttackUtil.FindEnemiesInAttackRange(this, gm.characters, x => x.boldLine);
+                }
+                if (action.Type == MartialSpecialActionType.ThreeLine)
+                {
+                    inRange = MartialAttackUtil.FindEnemiesInAttackRange(this, gm.characters, x => x.threeLine);
+                }
+
+                if (inRange.Count == 0)
+                {
+                    specialActionStates[i] = MartialSpecialActionCandidateState.OutOfRange;
+                }
             }
         }
 

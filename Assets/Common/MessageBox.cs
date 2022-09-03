@@ -11,7 +11,7 @@ public class MessageBox : MonoBehaviour
     public Button yesButton;
     public Button noButton;
     public Button cancelButton;
-    private bool isShowing;
+    public GameObject modalBackground;
     private MessageBoxResult result;
 
     private System.Action<MessageBoxResult> callback;
@@ -24,15 +24,15 @@ public class MessageBox : MonoBehaviour
         noButton.onClick.AddListener(OnNoClick);
         cancelButton.onClick.AddListener(OnCancelClick);
         gameObject.SetActive(false);
-        isShowing = false;
     }
 
-    public void Show(string text, MessageBoxType type = MessageBoxType.Ok, System.Action<MessageBoxResult> callback = null)
+    private void Show(string text, MessageBoxType type = MessageBoxType.Ok, bool isModal = true, System.Action<MessageBoxResult> callback = null)
     {
         this.text.text = text;
         gameObject.SetActive(true);
-        isShowing = true;
         this.callback = callback;
+
+        modalBackground.SetActive(isModal);
 
         switch (type)
         {
@@ -67,13 +67,29 @@ public class MessageBox : MonoBehaviour
         }
 
     }
+    public void Show(string text, MessageBoxType type = MessageBoxType.Ok, System.Action<MessageBoxResult> callback = null)
+    {
+        Show(text, type, isModal: false, callback);
+    }
+    public void ShowDialog(string text, MessageBoxType type = MessageBoxType.Ok, System.Action<MessageBoxResult> callback = null)
+    {
+        Show(text, type, isModal: true, callback);
+    }
 
-    public IEnumerator ShowAsync(string text, MessageBoxType type = MessageBoxType.Ok, System.Action<MessageBoxResult> callback = null)
+    private IEnumerator ShowAsync(string text, MessageBoxType type = MessageBoxType.Ok, bool isModal = true, System.Action<MessageBoxResult> callback = null)
     {
         var res = default(MessageBoxResult?);
-        Show(text, type, result => res = result);
+        Show(text, type, isModal, result => res = result);
         while (!res.HasValue) yield return new WaitForSeconds(0.05f);
         callback?.Invoke(result);
+    }
+    public IEnumerator ShowAsync(string text, MessageBoxType type = MessageBoxType.Ok, System.Action<MessageBoxResult> callback = null)
+    {
+        yield return ShowAsync(text, type, isModal: false, callback);
+    }
+    public IEnumerator ShowDialogAsync(string text, MessageBoxType type = MessageBoxType.Ok, System.Action<MessageBoxResult> callback = null)
+    {
+        yield return ShowAsync(text, type, isModal: true, callback);
     }
 
 
@@ -100,7 +116,6 @@ public class MessageBox : MonoBehaviour
     private void OnClick()
     {
         gameObject.SetActive(false);
-        isShowing = false;
         callback?.Invoke(result);
     }
 }

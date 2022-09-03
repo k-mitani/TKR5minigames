@@ -20,7 +20,7 @@ public class MartialSpecialListUI : MonoBehaviour
         
     }
 
-    public void Show(MartialCharacter chara, Action<MartialSpecialAction> onClick)
+    public void Show(MartialGameManager gm, MartialCharacter chara)
     {
         var rowsCount = rowsParent.childCount;
         for (int i = 0; i < chara.specialActions.Count; i++)
@@ -37,10 +37,7 @@ public class MartialSpecialListUI : MonoBehaviour
             row.button.colors = chara.specialActionStates[i] == MartialSpecialActionCandidateState.CanDo ?
                 row.applicableColor : row.notApplicableColor;
             row.button.onClick.RemoveAllListeners();
-            row.button.onClick.AddListener(() =>
-            {
-                onClick(action);
-            });
+            row.button.onClick.AddListener(() => OnRowClick(gm, action));
         }
         // 余計な行を削除する。
         while (rowsParent.childCount > chara.specialActions.Count)
@@ -50,6 +47,42 @@ public class MartialSpecialListUI : MonoBehaviour
         }
 
         gameObject.SetActive(true);
+    }
+
+    private void OnRowClick(MartialGameManager gm, MartialSpecialAction selected)
+    {
+        var player = gm.player;
+        var messageBox = gm.messageBox;
+        var uiSpecialList = gm.uiSpecialList;
+
+        var actionIndex = player.specialActions.IndexOf(selected);
+        var state = player.specialActionStates[actionIndex];
+        if (state == MartialSpecialActionCandidateState.LackOfKiai)
+        {
+            messageBox.ShowDialog("気合が不足しています。");
+            return;
+        }
+        if (state == MartialSpecialActionCandidateState.OutOfRange)
+        {
+            messageBox.ShowDialog("攻撃範囲外です。");
+            return;
+        }
+
+        messageBox.ShowDialog(
+            $"「{selected.Name}」を実行します。よろしいですか？",
+            MessageBoxType.OkCancel,
+            res =>
+            {
+                if (res == MessageBoxResult.Cancel)
+                {
+                    return;
+                }
+
+                uiSpecialList.Hide();
+                player.nextAction = MartialCharacter.NextAction.Special;
+                player.nextActionSpecial = selected;
+                gm.states.Activate(x => x.PreMove);
+            });
     }
 
     public void Hide()
