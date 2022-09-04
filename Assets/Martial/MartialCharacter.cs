@@ -44,7 +44,7 @@ public class MartialCharacter : MonoBehaviour
     public MartialSpecialAction nextActionSpecial { get; set; }
     public bool IsAlive => hp > 0;
 
-    private MartialCharacter attackTarget;
+    private MartialCharacter[] attackTargets;
     private bool isAnimating;
 
     public MartialSpecialAction.Gouriki gourikiState;
@@ -238,23 +238,32 @@ public class MartialCharacter : MonoBehaviour
         yield return MartialAttackUtil.SelectAttackTarget(gm, this, enemiesInAttackRange);
         var target = MartialAttackUtil.SelectAttackTargetResult;
 
-        yield return AttackTo(target, false);
+        yield return AttackTo(false, target); 
         attackRanges.HideAll();
     }
 
-    public IEnumerator AttackTo(MartialCharacter target, bool isCounter)
+    public IEnumerator AttackTo(bool isCounter, params MartialCharacter[] targets)
     {
-        attackTarget = target;
+        attackTargets = targets;
         isAnimating = true;
         animator.SetTrigger("Attack1");
         while (isAnimating) yield return new WaitForSeconds(0.1f);
 
+        // カウンター処理なら処理終了。
+        if (isCounter) yield break;
+
         // 敵が反撃待ちなら、反撃処理を行う。
-        if (!isCounter && target.IsAlive && target.counterAttackState != null)
+        foreach (var target in targets)
         {
+            if (!target.IsAlive) continue;
+            if (target.counterAttackState == null) continue;
+            // 反撃範囲外なら何もしない。
+            var inRange = MartialAttackUtil.FindEnemiesInAttackRange(target, new[] { this });
+            if (inRange.Count == 0) continue;
+
             target.animator.SetBool("IsGuarding", false);
             target.transform.LookAt(transform);
-            yield return target.AttackTo(this, true);
+            yield return target.AttackTo(false, this);
             target.animator.SetBool("IsGuarding", true);
             yield return new WaitForSeconds(0.5f);
         }
@@ -300,7 +309,10 @@ public class MartialCharacter : MonoBehaviour
     {
         if (name.Equals("Impact"))
         {
-            attackTarget.OnDamage(this);
+            foreach (var target in attackTargets)
+            {
+                target.OnDamage(this);
+            }
         }
         else if (name.Equals("End"))
         {

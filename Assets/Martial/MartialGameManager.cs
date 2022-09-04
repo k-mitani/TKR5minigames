@@ -316,7 +316,7 @@ public class MartialGameManager : MonoBehaviour
         targets.ForEach(t => t.ShowSelectionBox());
         while (isSelectingCharacter) yield return new WaitForSeconds(0.1f);
 
-        var selected = characters.First(c => c.selectionBox == selectCharacterMouseHoveredBox);
+        var selected = characters.First(c => c.selectionBox.gameObject == selectCharacterMouseHoveredBox.gameObject);
         SelectCharacterResult = selected;
         targets.ForEach(t => t.HideSelectionBox());
     }

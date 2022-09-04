@@ -71,7 +71,7 @@ public abstract class MartialSpecialAction
                 actor.transform.localPosition -= actor.transform.forward * 0.75f;
 
                 // 攻撃する。
-                yield return actor.AttackTo(chara, false);
+                yield return actor.AttackTo(false, chara);
             }
             yield return new WaitForSeconds(0.20f);
             // 位置と向きを元に戻す。
@@ -94,10 +94,7 @@ public abstract class MartialSpecialAction
             var inRange = MartialAttackUtil.FindEnemiesInAttackRange(actor, gm.enemies, x => x.boldLine);
 
             actor.attackRanges.Show(x => x.boldLine);
-            foreach (var item in inRange)
-            {
-                yield return actor.AttackTo(item, false);
-            }
+            yield return actor.AttackTo(false, inRange.ToArray());
             actor.attackRanges.HideAll();
         }
     }
@@ -117,7 +114,7 @@ public abstract class MartialSpecialAction
             var target = MartialAttackUtil.SelectAttackTargetResult;
 
             actor.attackRanges.ShowMain();
-            yield return actor.AttackTo(target, false);
+            yield return actor.AttackTo(false, target);
             actor.attackRanges.HideAll();
         }
     }
@@ -134,10 +131,7 @@ public abstract class MartialSpecialAction
         {
             var inRange = MartialAttackUtil.FindEnemiesInAttackRange(actor, gm.enemies, x => x.threeLine);
             actor.attackRanges.Show(x => x.threeLine);
-            foreach (var item in inRange)
-            {
-                yield return actor.AttackTo(item, false);
-            }
+            yield return actor.AttackTo(false, inRange.ToArray());
             actor.attackRanges.HideAll();
         }
     }
