@@ -12,11 +12,11 @@ public class MartialCharacter : MonoBehaviour
     public bool isEnemy => !isPlayer;
     public bool IsOpponent(MartialCharacter target) => isPlayer != target.isPlayer;
 
-    public int prowess;
+    public MartialCharacterData prototype;
+    public int prowess => prototype.prowess;
     public int hp = 100;
     public int kiai;
-    public int kiaiMax;
-    public List<MartialSpecialActionTag> specials = new();
+    public int kiaiMax => prototype.kiaiMax;
     public List<MartialSpecialAction> specialActions = new();
     public List<MartialSpecialActionCandidateState> specialActionStates = new();
 
@@ -59,9 +59,8 @@ public class MartialCharacter : MonoBehaviour
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody>();
 
-        kiaiMax = Mathf.Max(2, kiaiMax);
-        specialActions = specials.Select(tag => MartialSpecialAction.Actions.Find(a => a.Tag == tag)).ToList();
-        specialActionStates = specials.Select(_ => MartialSpecialActionCandidateState.CanDo).ToList();
+        specialActions = prototype.specialActions.Select(tag => MartialSpecialAction.Actions.Find(a => a.Tag == tag)).ToList();
+        specialActionStates = specialActions.Select(_ => MartialSpecialActionCandidateState.CanDo).ToList();
 
         // 必要な要素を取得する。
         var parent = transform.parent;
@@ -202,14 +201,14 @@ public class MartialCharacter : MonoBehaviour
 
     public void OnAfterMove()
     {
+        // 他のキャラから押されて動いている場合もあるので必ず止める。
+        rb.velocity = Vector3.zero;
+
         if (!IsAlive) return;
 
         if (nextAction == NextAction.Move)
         {
             animator.SetBool("IsMoving", false);
-
-            // 移動を止める。
-            rb.velocity = Vector3.zero;
 
             // 設定した方向に向く。
             if (MovePhaseFinalDirection != null) transform.rotation = MovePhaseFinalDirection.Value;
