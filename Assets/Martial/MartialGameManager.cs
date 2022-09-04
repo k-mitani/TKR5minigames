@@ -234,7 +234,12 @@ public class MartialGameManager : MonoBehaviour
                 if (!c.IsAlive) continue;
                 var action = c.nextActionSpecial;
                 yield return messageBox.ShowDialogAsync($"{c.name}が「{action.Name}」を実行します。");
-                
+
+                c.kiai -= action.Kiai;
+                if (c.isPlayer)
+                {
+                    uiTop.textKiai.text = $"{player.kiai}/{player.kiaiMax}";
+                }
                 yield return action.DoAction(this, c);
             }
 
