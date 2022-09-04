@@ -68,21 +68,53 @@ public class MartialSpecialListUI : MonoBehaviour
             return;
         }
 
-        messageBox.ShowDialog(
-            $"「{selected.Name}」を実行します。よろしいですか？",
-            MessageBoxType.OkCancel,
-            res =>
-            {
-                if (res == MessageBoxResult.Cancel)
-                {
-                    return;
-                }
+        // 攻撃系なら攻撃範囲を表示する。
+        var shouldShowAttackRange =
+            selected.Type == MartialSpecialActionType.BoldLine ||
+            selected.Type == MartialSpecialActionType.ThreeLine ||
+            selected.Type == MartialSpecialActionType.Sword;
+        if (shouldShowAttackRange)
+        {
+            player.attackRanges.Show(x =>
+                selected.Type == MartialSpecialActionType.BoldLine ? x.boldLine :
+                selected.Type == MartialSpecialActionType.ThreeLine ? x.threeLine :
+                x.sword);
+            uiSpecialList.Hide();
+            gm.oneShotClickListener = OnContinue;
+        }
+        else
+        {
+            OnContinue(true);
+        }
 
-                uiSpecialList.Hide();
-                player.nextAction = MartialCharacter.NextAction.Special;
-                player.nextActionSpecial = selected;
-                gm.states.Activate(x => x.PreMove);
-            });
+
+        void OnContinue(bool ok)
+        {
+            if (!ok)
+            {
+                player.attackRanges.HideAll();
+                Show(gm, player);
+                return;
+            }
+
+            messageBox.ShowDialog(
+                $"「{selected.Name}」を実行します。よろしいですか？",
+                MessageBoxType.OkCancel,
+                res =>
+                {
+                    player.attackRanges.HideAll();
+                    if (res == MessageBoxResult.Cancel)
+                    {
+                        if (shouldShowAttackRange) Show(gm, player);
+                        return;
+                    }
+
+                    uiSpecialList.Hide();
+                    player.nextAction = MartialCharacter.NextAction.Special;
+                    player.nextActionSpecial = selected;
+                    gm.states.Activate(x => x.PreMove);
+                });
+        }
     }
 
     public void Hide()

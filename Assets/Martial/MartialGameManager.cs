@@ -24,6 +24,8 @@ public class MartialGameManager : MonoBehaviour
 
     private bool skipAnimation;
 
+    public System.Action<bool> oneShotClickListener;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -102,7 +104,17 @@ public class MartialGameManager : MonoBehaviour
         // 左クリック: 進む
         if (Input.GetMouseButtonDown(0))
         {
-            if (states.SetMovePosition.IsActive)
+            if (messageBox.modalBackground.activeInHierarchy)
+            {
+                // モーダルダイアログ表示中なら何もしない。
+            }
+            else if (oneShotClickListener != null)
+            {
+                var listener = oneShotClickListener;
+                oneShotClickListener = null;
+                listener(true);
+            }
+            else if (states.SetMovePosition.IsActive)
             {
                 // 現在の影の位置を移動先する。
                 player.MovePhaseDestination = player.shadow.position;
@@ -130,7 +142,17 @@ public class MartialGameManager : MonoBehaviour
         // 右クリック: 戻る
         if (Input.GetMouseButtonDown(1))
         {
-            if (states.SelectAction.IsActive && uiSpecialList.gameObject.activeSelf)
+            if (messageBox.modalBackground.activeInHierarchy)
+            {
+                // モーダルダイアログ表示中なら何もしない。
+            }
+            else if (oneShotClickListener != null)
+            {
+                var listener = oneShotClickListener;
+                oneShotClickListener = null;
+                listener(false);
+            }
+            else if (states.SelectAction.IsActive && uiSpecialList.gameObject.activeSelf)
             {
                 uiSpecialList.Hide();
             }
