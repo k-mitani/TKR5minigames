@@ -1,0 +1,35 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/Tea/TeaGameUIStyle.uss?fileID=7433441132597879392&amp;guid=075e599867748ae479d4eb2ca3584210&amp;type=3#TeaGameUIStyle" />
+    <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); -unity-font: url(&apos;project://database/Assets/Fonts/BIZUDGothic-Regular.ttf?fileID=12800000&amp;guid=40d1174f487d50a4baf30efbd996b84d&amp;type=3#BIZUDGothic-Regular&apos;);">
+        <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
+            <ui:Label tabindex="-1" text="01/05問" display-tooltip-when-elided="true" name="Status" style="font-size: 90px; position: absolute;" />
+            <ui:VisualElement name="ResultPanel" style="flex-grow: 0; background-color: rgb(255, 227, 144); position: absolute; bottom: 30px; left: 20px; font-size: 40px; flex-direction: row; -unity-font-style: bold; -unity-text-align: middle-center;">
+                <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
+                    <ui:Label tabindex="-1" text="一" display-tooltip-when-elided="true" name="Label" class="result-cell" style="-unity-font-style: normal;" />
+                    <ui:Label tabindex="-1" text="○" display-tooltip-when-elided="true" class="result-cell result-cell__answer" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
+                    <ui:Label tabindex="-1" text="二" display-tooltip-when-elided="true" class="result-cell" style="-unity-font-style: normal;" />
+                    <ui:Label tabindex="-1" text="○" display-tooltip-when-elided="true" class="result-cell result-cell__answer" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
+                    <ui:Label tabindex="-1" text="三" display-tooltip-when-elided="true" class="result-cell" />
+                    <ui:Label tabindex="-1" text="○" display-tooltip-when-elided="true" class="result-cell result-cell__answer" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
+                    <ui:Label tabindex="-1" text="四" display-tooltip-when-elided="true" class="result-cell" />
+                    <ui:Label tabindex="-1" text="○" display-tooltip-when-elided="true" class="result-cell result-cell__answer" />
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
+                    <ui:Label tabindex="-1" text="五" display-tooltip-when-elided="true" class="result-cell" />
+                    <ui:Label tabindex="-1" text="○" display-tooltip-when-elided="true" class="result-cell result-cell__answer" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
+                <ui:VisualElement name="References" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
+                    <ui:VisualElement style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: url(&apos;project://database/Assets/External/Brackeys/2D%20Mega%20Pack/Items%20&amp;%20Icons/Pixel%20Art/Sand.png?fileID=2800000&amp;guid=45854289d4f5e5a418b189bc9b896389&amp;type=3#Sand&apos;);" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,18 @@
+.result-cell {
+    flex-grow: 1;
+    background-color: rgba(0, 0, 0, 0);
+    border-left-color: rgb(0, 0, 0);
+    border-right-color: rgb(0, 0, 0);
+    border-top-color: rgb(0, 0, 0);
+    border-bottom-color: rgb(0, 0, 0);
+    border-left-width: 3px;
+    border-right-width: 3px;
+    border-top-width: 3px;
+    border-bottom-width: 3px;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    -unity-font-style: normal;
+    -unity-font: url('project://database/Assets/Fonts/BIZUDGothic-Regular.ttf?fileID=12800000&guid=40d1174f487d50a4baf30efbd996b84d&type=3#BIZUDGothic-Regular');
+}
