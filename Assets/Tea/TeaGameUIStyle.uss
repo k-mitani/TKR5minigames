@@ -16,3 +16,49 @@
     -unity-font-style: normal;
     -unity-font: url('project://database/Assets/Fonts/BIZUDGothic-Regular.ttf?fileID=12800000&guid=40d1174f487d50a4baf30efbd996b84d&type=3#BIZUDGothic-Regular');
 }
+
+.selection-border {
+    flex-grow: 0;
+    background-color: rgba(0, 0, 0, 0);
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    border-left-width: 5px;
+    border-right-width: 5px;
+    border-top-width: 5px;
+    border-bottom-width: 5px;
+    border-left-color: rgba(0, 255, 183, 0);
+    border-right-color: rgba(0, 255, 183, 0);
+    border-top-color: rgba(0, 255, 183, 0);
+    border-bottom-color: rgba(0, 255, 183, 0);
+}
+
+.selection-border--selected {
+    flex-grow: 0;
+    background-color: rgba(0, 0, 0, 0);
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    border-left-width: 5px;
+    border-right-width: 5px;
+    border-top-width: 5px;
+    border-bottom-width: 5px;
+    border-left-color: rgb(0, 255, 183);
+    border-right-color: rgb(0, 255, 183);
+    border-top-color: rgb(0, 255, 183);
+    border-bottom-color: rgb(0, 255, 183);
+}
+
+.reference-item {
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.input-item {
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}

@@ -25,9 +25,47 @@
                     <ui:Label tabindex="-1" text="○" display-tooltip-when-elided="true" class="result-cell result-cell__answer" />
                 </ui:VisualElement>
             </ui:VisualElement>
-            <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
-                <ui:VisualElement name="References" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
-                    <ui:VisualElement style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: url(&apos;project://database/Assets/External/Brackeys/2D%20Mega%20Pack/Items%20&amp;%20Icons/Pixel%20Art/Sand.png?fileID=2800000&amp;guid=45854289d4f5e5a418b189bc9b896389&amp;type=3#Sand&apos;);" />
+            <ui:VisualElement name="VisualElement" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); align-items: center; justify-content: center; align-self: center;">
+                <ui:VisualElement name="References" style="flex-grow: 0; background-color: rgb(188, 159, 74); flex-direction: row; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;">
+                    <ui:VisualElement name="ReferenceItem" class="reference-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: url(&apos;project://database/Assets/External/Brackeys/2D%20Mega%20Pack/Items%20&amp;%20Icons/Pixel%20Art/Sand.png?fileID=2800000&amp;guid=45854289d4f5e5a418b189bc9b896389&amp;type=3#Sand&apos;);" />
+                    <ui:VisualElement name="ReferenceItem" class="reference-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: url(&apos;project://database/Assets/External/Brackeys/2D%20Mega%20Pack/Items%20&amp;%20Icons/Pixel%20Art/Sand.png?fileID=2800000&amp;guid=45854289d4f5e5a418b189bc9b896389&amp;type=3#Sand&apos;);" />
+                    <ui:VisualElement name="ReferenceItem" class="reference-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: url(&apos;project://database/Assets/External/Brackeys/2D%20Mega%20Pack/Items%20&amp;%20Icons/Pixel%20Art/Sand.png?fileID=2800000&amp;guid=45854289d4f5e5a418b189bc9b896389&amp;type=3#Sand&apos;);" />
+                    <ui:VisualElement name="ReferenceItem" class="reference-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: url(&apos;project://database/Assets/External/Brackeys/2D%20Mega%20Pack/Items%20&amp;%20Icons/Pixel%20Art/Sand.png?fileID=2800000&amp;guid=45854289d4f5e5a418b189bc9b896389&amp;type=3#Sand&apos;);" />
+                    <ui:VisualElement name="ReferenceItem" class="reference-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: url(&apos;project://database/Assets/External/Brackeys/2D%20Mega%20Pack/Items%20&amp;%20Icons/Pixel%20Art/Sand.png?fileID=2800000&amp;guid=45854289d4f5e5a418b189bc9b896389&amp;type=3#Sand&apos;);" />
+                    <ui:VisualElement name="ReferenceItem" class="reference-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: url(&apos;project://database/Assets/External/Brackeys/2D%20Mega%20Pack/Items%20&amp;%20Icons/Pixel%20Art/Sand.png?fileID=2800000&amp;guid=45854289d4f5e5a418b189bc9b896389&amp;type=3#Sand&apos;);" />
+                    <ui:VisualElement name="ReferenceItem" class="reference-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: url(&apos;project://database/Assets/External/Brackeys/2D%20Mega%20Pack/Items%20&amp;%20Icons/Pixel%20Art/Sand.png?fileID=2800000&amp;guid=45854289d4f5e5a418b189bc9b896389&amp;type=3#Sand&apos;);" />
+                </ui:VisualElement>
+                <ui:VisualElement name="Inputs" style="flex-grow: 0; background-color: rgb(149, 176, 71); flex-direction: row; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;">
+                    <ui:VisualElement name="InputItem" class="input-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;" />
+                    <ui:VisualElement name="InputItem" class="input-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;" />
+                    <ui:VisualElement name="InputItem" class="input-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;" />
+                    <ui:VisualElement name="InputItem" class="input-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;" />
+                    <ui:VisualElement name="InputItem" class="input-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;" />
+                    <ui:VisualElement name="InputItem" class="input-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;" />
+                    <ui:VisualElement name="InputItem" class="input-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;" />
+                </ui:VisualElement>
+                <ui:VisualElement name="SelectionItems" style="flex-grow: 0; background-color: rgb(172, 179, 255); flex-direction: row; justify-content: flex-start; align-items: stretch; align-self: auto; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;">
+                    <ui:VisualElement name="SelectionBorder" class="selection-border selection-border--selected">
+                        <ui:VisualElement name="SelectionItem" class="selection-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="SelectionBorder" class="selection-border">
+                        <ui:VisualElement name="SelectionItem" class="selection-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="SelectionBorder" class="selection-border">
+                        <ui:VisualElement name="SelectionItem" class="selection-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="SelectionBorder" class="selection-border">
+                        <ui:VisualElement name="SelectionItem" class="selection-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="SelectionBorder" class="selection-border">
+                        <ui:VisualElement name="SelectionItem" class="selection-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none;" />
+                    </ui:VisualElement>
+                    <ui:VisualElement name="SelectionBorder" class="selection-border">
+                        <ui:VisualElement name="SelectionItem" class="selection-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:VisualElement name="VisualElement" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0);">
+                    <ui:Button text="確定" display-tooltip-when-elided="true" style="font-size: 40px;" />
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
