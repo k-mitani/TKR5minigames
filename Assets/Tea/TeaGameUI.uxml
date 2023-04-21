@@ -2,7 +2,9 @@
     <Style src="project://database/Assets/Tea/TeaGameUIStyle.uss?fileID=7433441132597879392&amp;guid=075e599867748ae479d4eb2ca3584210&amp;type=3#TeaGameUIStyle" />
     <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); -unity-font: url(&apos;project://database/Assets/Fonts/BIZUDGothic-Regular.ttf?fileID=12800000&amp;guid=40d1174f487d50a4baf30efbd996b84d&amp;type=3#BIZUDGothic-Regular&apos;);">
         <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
-            <ui:Label tabindex="-1" text="01/05問" display-tooltip-when-elided="true" name="Status" style="font-size: 90px; position: absolute;" />
+            <ui:Label tabindex="-1" text="01/05問" display-tooltip-when-elided="true" name="Status" style="font-size: 60px; position: absolute; color: white;" />
+            <ui:Label tabindex="-1" text="←→: Move the cursor&#10;Space: Select&#10;Backspace: Delete" display-tooltip-when-elided="true" name="DescriptionNormal" style="color: white; font-size: 30px; position: absolute; bottom: 0; right: 0; -unity-text-align: upper-left;" />
+            <ui:Label tabindex="-1" text="Space: OK&#10;Backspace: Cancel" display-tooltip-when-elided="true" name="DescriptionDialog" style="color: white; font-size: 30px; position: absolute; bottom: 0; right: 0; -unity-text-align: upper-left;" />
             <ui:VisualElement name="ResultPanel" style="flex-grow: 0; background-color: rgb(255, 227, 144); position: absolute; bottom: 30px; left: 20px; font-size: 40px; flex-direction: row; -unity-font-style: bold; -unity-text-align: middle-center;">
                 <ui:VisualElement style="flex-grow: 1; background-color: rgba(0, 0, 0, 0);">
                     <ui:Label tabindex="-1" text="一" display-tooltip-when-elided="true" name="Label" class="result-cell" style="-unity-font-style: normal;" />
@@ -44,29 +46,40 @@
                     <ui:VisualElement name="InputItem" class="input-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;" />
                     <ui:VisualElement name="InputItem" class="input-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px;" />
                 </ui:VisualElement>
-                <ui:VisualElement name="SelectionItems" style="flex-grow: 0; background-color: rgb(172, 179, 255); flex-direction: row; justify-content: flex-start; align-items: stretch; align-self: auto; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;">
-                    <ui:VisualElement name="SelectionBorder" class="selection-border selection-border--selected">
-                        <ui:VisualElement name="SelectionItem" class="selection-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none;" />
+                <ui:VisualElement style="flex-grow: 0; background-color: rgba(0, 0, 0, 0);">
+                    <ui:VisualElement name="SelectionItems" style="background-color: rgb(172, 179, 255); flex-direction: row; justify-content: flex-start; align-items: stretch; align-self: auto; margin-left: 5px; margin-right: 5px; margin-top: 5px; margin-bottom: 5px; padding-left: 5px; padding-right: 5px; padding-top: 5px; padding-bottom: 5px;">
+                        <ui:VisualElement name="SelectionBorder" class="selection-border selection-border--selected">
+                            <ui:VisualElement name="SelectionItem" class="selection-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none;" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="SelectionBorder" class="selection-border">
+                            <ui:VisualElement name="SelectionItem" class="selection-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none;" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="SelectionBorder" class="selection-border">
+                            <ui:VisualElement name="SelectionItem" class="selection-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none;" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="SelectionBorder" class="selection-border">
+                            <ui:VisualElement name="SelectionItem" class="selection-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none;" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="SelectionBorder" class="selection-border">
+                            <ui:VisualElement name="SelectionItem" class="selection-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none;" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="SelectionBorder" class="selection-border">
+                            <ui:VisualElement name="SelectionItem" class="selection-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none;" />
+                        </ui:VisualElement>
                     </ui:VisualElement>
-                    <ui:VisualElement name="SelectionBorder" class="selection-border">
-                        <ui:VisualElement name="SelectionItem" class="selection-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none;" />
-                    </ui:VisualElement>
-                    <ui:VisualElement name="SelectionBorder" class="selection-border">
-                        <ui:VisualElement name="SelectionItem" class="selection-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none;" />
-                    </ui:VisualElement>
-                    <ui:VisualElement name="SelectionBorder" class="selection-border">
-                        <ui:VisualElement name="SelectionItem" class="selection-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none;" />
-                    </ui:VisualElement>
-                    <ui:VisualElement name="SelectionBorder" class="selection-border">
-                        <ui:VisualElement name="SelectionItem" class="selection-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none;" />
-                    </ui:VisualElement>
-                    <ui:VisualElement name="SelectionBorder" class="selection-border">
-                        <ui:VisualElement name="SelectionItem" class="selection-item" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0); width: 80px; height: 80px; flex-shrink: 0; background-image: none;" />
+                    <ui:VisualElement name="ConfirmDialog" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); position: absolute; bottom: 0; left: 0; right: 0; justify-content: center; top: 0;">
+                        <ui:VisualElement style="flex-grow: 0; background-color: rgb(53, 53, 53); align-items: auto; justify-content: center; align-self: center;">
+                            <ui:Label tabindex="-1" text="この並びでよろしいですか？" display-tooltip-when-elided="true" style="color: rgb(255, 255, 255); font-size: 40px;" />
+                        </ui:VisualElement>
                     </ui:VisualElement>
                 </ui:VisualElement>
-                <ui:VisualElement name="VisualElement" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0);">
-                    <ui:Button text="確定" display-tooltip-when-elided="true" style="font-size: 40px;" />
-                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+        <ui:VisualElement name="GameOver" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0); position: absolute; bottom: 0; left: 0; right: 0; justify-content: center; top: 0;">
+            <ui:VisualElement name="VisualElement" style="flex-grow: 0; align-items: center; justify-content: center; align-self: center;">
+                <ui:Label tabindex="-1" text="完璧!" display-tooltip-when-elided="true" name="Label" style="color: rgb(255, 255, 255); font-size: 70px; -unity-font-style: normal; margin-top: 20px;" />
+                <ui:Button text="リトライ" display-tooltip-when-elided="true" name="Restart" style="font-size: 30px;" />
+                <ui:Button text="メニュー" display-tooltip-when-elided="true" name="GoToMenu" style="font-size: 30px; margin-top: 10px;" />
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

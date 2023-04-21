@@ -3,43 +3,85 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 public class TeaGameUI : MonoBehaviour
 {
-    public event EventHandler InputCompleted;
-
     private UIDocument uidoc;
-    
-    private VisualElement referencesContainer;
-    private List<VisualElement> references;
 
-    private VisualElement inputsContainer;
-    private List<VisualElement> inputs;
-    private List<TeaItem> inputsRaw = new List<TeaItem>();
+    private Label elStatus;
+    private Label elDescriptionNormal;
+    private Label elDescriptionDialog;
+    private VisualElement elConfirmDialog;
+    private VisualElement elResultPanel;
+    private List<Label> elsResultPanelResultCell;
+    private VisualElement elGameOver;
+
+    private VisualElement elReferencesContainer;
+    private List<VisualElement> elsReferences;
+
+    private VisualElement elInputsContainer;
+    private List<VisualElement> elsInputs;
+    private List<TeaItem> inputs = new List<TeaItem>();
     private int nextInputIndex = 0;
 
 
-    private VisualElement selectionItemsContainer;
-    private List<VisualElement> selectionItems;
-    private TeaItem[] selectionItemsRaw;
+    private VisualElement elSelectionItemsContainer;
+    private List<VisualElement> elsSelectionItems;
+    private TeaItem[] selectionItems;
     private int selectionIndex;
 
     private bool canInput = false;
 
+    public event EventHandler ClickRestartButton;
+    public event EventHandler ClickGoToMenuButton;
+
     void Awake()
     {
+        // UI要素を取得する。
         TryGetComponent(out uidoc);
         var root = uidoc.rootVisualElement;
-        referencesContainer = root.Q<VisualElement>("References");
-        references = referencesContainer.Children().ToList();
 
-        inputsContainer = root.Q<VisualElement>("Inputs");
-        inputs = inputsContainer.Children().ToList();
-        inputsRaw = inputs.Select(_ => (TeaItem)null).ToList();
+        elStatus = root.Q<Label>("Status");
+        elDescriptionNormal = root.Q<Label>("DescriptionNormal");
+        elDescriptionDialog = root.Q<Label>("DescriptionDialog");
+        elConfirmDialog = root.Q<VisualElement>("ConfirmDialog");
+        elResultPanel = root.Q<VisualElement>("ResultPanel");
+        elsResultPanelResultCell = root.Query<Label>(className: "result-cell__answer").ToList();
+        elGameOver = root.Q<VisualElement>("GameOver");
 
-        selectionItemsContainer = root.Q<VisualElement>("SelectionItems");
-        selectionItems = selectionItemsContainer.Children().ToList();
+        root.Q<Button>("Restart").clicked += () =>
+        {
+            ClickRestartButton?.Invoke(this, EventArgs.Empty);
+        };
+        root.Q<Button>("GoToMenu").clicked += () =>
+        {
+            ClickGoToMenuButton?.Invoke(this, EventArgs.Empty);
+        };
+
+
+        // 正解データ
+        elReferencesContainer = root.Q<VisualElement>("References");
+        elsReferences = elReferencesContainer.Children().ToList();
+        // 入力データ
+        elInputsContainer = root.Q<VisualElement>("Inputs");
+        elsInputs = elInputsContainer.Children().ToList();
+        // 候補
+        elSelectionItemsContainer = root.Q<VisualElement>("SelectionItems");
+        elsSelectionItems = elSelectionItemsContainer.Children().ToList();
+
+        ClearInputs();
+    }
+
+    public void HideGameOverUI()
+    {
+        elGameOver.style.visibility = Visibility.Hidden;
+    }
+    public void ShowGameOverUI(string text)
+    {
+        elGameOver.style.visibility = Visibility.Visible;
+        elGameOver.Q<Label>().text = text;
     }
 
     public void MoveSelectionRight()
@@ -47,9 +89,9 @@ public class TeaGameUI : MonoBehaviour
         if (!canInput) return;
 
         var prevSelectionIndex = selectionIndex;
-        selectionIndex = (selectionIndex + 1) % selectionItems.Count;
-        selectionItems[prevSelectionIndex].RemoveFromClassList("selection-border--selected");
-        selectionItems[selectionIndex].AddToClassList("selection-border--selected");
+        selectionIndex = (selectionIndex + 1) % elsSelectionItems.Count;
+        elsSelectionItems[prevSelectionIndex].RemoveFromClassList("selection-border--selected");
+        elsSelectionItems[selectionIndex].AddToClassList("selection-border--selected");
     }
 
     public void MoveSelectionLeft()
@@ -57,19 +99,9 @@ public class TeaGameUI : MonoBehaviour
         if (!canInput) return;
         
         var prevSelectionIndex = selectionIndex;
-        selectionIndex = (selectionItems.Count + selectionIndex - 1) % selectionItems.Count;
-        selectionItems[prevSelectionIndex].RemoveFromClassList("selection-border--selected");
-        selectionItems[selectionIndex].AddToClassList("selection-border--selected");
-    }
-
-    public void MoveSelectionDown()
-    {
-        if (!canInput) return;
-
-        var prevSelectionIndex = selectionIndex;
-        selectionIndex = (selectionItems.Count + selectionIndex - 1) % selectionItems.Count;
-        selectionItems[prevSelectionIndex].RemoveFromClassList("selection-border--selected");
-        selectionItems[selectionIndex].AddToClassList("selection-border--selected");
+        selectionIndex = (elsSelectionItems.Count + selectionIndex - 1) % elsSelectionItems.Count;
+        elsSelectionItems[prevSelectionIndex].RemoveFromClassList("selection-border--selected");
+        elsSelectionItems[selectionIndex].AddToClassList("selection-border--selected");
     }
 
     public void DeleteLastInput()
@@ -77,32 +109,45 @@ public class TeaGameUI : MonoBehaviour
         if (!canInput) return;
         if (nextInputIndex == 0) return;
 
-        inputsRaw[nextInputIndex - 1] = null;
-        inputs[nextInputIndex - 1].style.backgroundImage = null;
+        inputs[nextInputIndex - 1] = null;
+        elsInputs[nextInputIndex - 1].style.backgroundImage = null;
         nextInputIndex--;
     }
-    
-    public void InputSelectionItem()
+
+    internal void ClearInputs()
     {
-        if (!canInput) return;
-        // すでに全部入力済みなら、最後の要素を置き換える。
-        if (nextInputIndex >= inputs.Count)
+        inputs = elsInputs.Select(_ => (TeaItem)null).ToList();
+        for (int i = 0; i < elsInputs.Count; i++)
         {
-            nextInputIndex = inputs.Count - 1;
+            elsInputs[i].style.backgroundImage = null;
         }
-        
-        inputsRaw[nextInputIndex] = selectionItemsRaw[selectionIndex];
-        inputs[nextInputIndex].style.backgroundImage = inputsRaw[nextInputIndex].Texture;
-        nextInputIndex++;
+        nextInputIndex = 0;
     }
 
-    public void SetSelectionItems(TeaItem[] items)
+    public bool InputSelectedItem()
     {
-        selectionItemsRaw = items;
+        if (!canInput) return false;
+        // すでに全部入力済みなら、最後の要素を置き換える。
+        if (nextInputIndex >= elsInputs.Count)
+        {
+            nextInputIndex = elsInputs.Count - 1;
+        }
+        
+        inputs[nextInputIndex] = selectionItems[selectionIndex];
+        elsInputs[nextInputIndex].style.backgroundImage = inputs[nextInputIndex].Texture;
+        nextInputIndex++;
+
+        // 全部入力済みならtrueを返す。
+        return nextInputIndex >= elsInputs.Count;
+    }
+
+    public void InitializeSelectionItems(TeaItem[] items)
+    {
+        selectionItems = items;
         for (int i = 0; i < items.Length; i++)
         {
             var item = items[i];
-            var selectionItem = selectionItems[i];
+            var selectionItem = elsSelectionItems[i];
             selectionItem.style.backgroundImage = item.Texture;
         }
     }
@@ -112,7 +157,7 @@ public class TeaGameUI : MonoBehaviour
         for (int i = 0; i < items.Length; i++)
         {
             var item = items[i];
-            var reference = references[i];
+            var reference = elsReferences[i];
             reference.style.backgroundImage = item.Texture;
         }
     }
@@ -120,24 +165,59 @@ public class TeaGameUI : MonoBehaviour
     internal void DisableInput()
     {
         canInput = false;
-        inputsContainer.style.opacity = 0.5f;
-        selectionItemsContainer.style.opacity = 0.5f;
+        elInputsContainer.style.opacity = 0.5f;
+        elSelectionItemsContainer.style.opacity = 0.5f;
     }
 
     internal void EnableInput()
     {
         canInput = true;
-        inputsContainer.style.opacity = 1;
-        selectionItemsContainer.style.opacity = 1;
+        elInputsContainer.style.opacity = 1;
+        elSelectionItemsContainer.style.opacity = 1;
     }
 
     internal void ShowReferenceItems()
     {
-        referencesContainer.style.visibility = Visibility.Visible;
+        elReferencesContainer.style.visibility = Visibility.Visible;
     }
 
     internal void HideReferenceItems()
     {
-        referencesContainer.style.visibility = Visibility.Hidden;
+        elReferencesContainer.style.visibility = Visibility.Hidden;
+    }
+
+    internal void ShowConfirmDialog(string text)
+    {
+        elDescriptionNormal.style.visibility = Visibility.Hidden;
+        elDescriptionDialog.style.visibility = Visibility.Visible;
+        elConfirmDialog.style.visibility = Visibility.Visible;
+        elConfirmDialog.Q<Label>().text = text;
+    }
+
+    internal void HideConfirmDialog()
+    {
+        elDescriptionNormal.style.visibility = Visibility.Visible;
+        elDescriptionDialog.style.visibility = Visibility.Hidden;
+        elConfirmDialog.style.visibility = Visibility.Hidden;
+    }
+
+    internal TeaItem[] GetInputItems()
+    {
+        return inputs.ToArray();
+    }
+
+    internal void DrawResultPanel(List<bool> results)
+    {
+        for (int i = 0; i < elsResultPanelResultCell.Count; i++)
+        {
+            var text = "";
+            if (i < results.Count) text = results[i] ? "○" : "×";
+            elsResultPanelResultCell[i].text = text;
+        }   
+    }
+
+    internal void ShowCurrentQuestionNumber(int currentQuestionIndex, int maxQuestionCount)
+    {
+        elStatus.text = $"{currentQuestionIndex + 1:00}/{maxQuestionCount:00}問";
     }
 }
